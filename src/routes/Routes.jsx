@@ -1,5 +1,6 @@
 import { createBrowserRouter } from "react-router";
 import Navbar from "../components/Navbar";
+import Login from "../pages/Login";
 
 const router = createBrowserRouter([
   {
@@ -52,7 +53,7 @@ const router = createBrowserRouter([
     element: (
       <>
         <Navbar />
-        <div>Login Page</div>
+        <Login />
       </>
     ),
   },
