@@ -1,71 +1,45 @@
 import { createBrowserRouter } from "react-router";
-import Navbar from "../components/Navbar";
+import RootLayout from "../layouts/RootLayout"; 
 import Login from "../pages/Login";
-import Register from "../pages/Register"; // Add this import
+import Register from "../pages/Register";
+import HomePage from "../pages/HomePage";
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: (
-      <>
-        <Navbar />
-        <div>Home Page</div>
-      </>
-    ),
-  },
-  {
-    path: "/available-foods",
-    element: (
-      <>
-        <Navbar />
-        <div>Available Foods Page</div>
-      </>
-    ),
-  },
-  {
-    path: "/add-food",
-    element: (
-      <>
-        <Navbar />
-        <div>Add Food Page</div>
-      </>
-    ),
-  },
-  {
-    path: "/manage-my-foods",
-    element: (
-      <>
-        <Navbar />
-        <div>Manage My Foods Page</div>
-      </>
-    ),
-  },
-  {
-    path: "/my-food-requests",
-    element: (
-      <>
-        <Navbar />
-        <div>My Food Requests Page</div>
-      </>
-    ),
-  },
-  {
-    path: "/login",
-    element: (
-      <>
-        <Navbar />
-        <Login />
-      </>
-    ),
-  },
-  {
-    path: "/signup",
-    element: (
-      <>
-        <Navbar />
-        <Register /> {/* Change this line */}
-      </>
-    ),
+    element: <RootLayout />, 
+    
+    children: [
+      {
+        index: true, 
+        element: <HomePage />,
+      },
+      {
+        path: "available-foods",
+        element: <div>Available Foods Page</div>,
+      },
+      {
+        path: "add-food",
+        element: <div>Add Food Page</div>, 
+      },
+      {
+        path: "manage-my-foods",
+        element: <div>Manage My Foods Page</div>,
+      },
+      {
+        path: "my-food-requests",
+        element: <div>My Food Requests Page</div>, 
+      },
+      {
+        path: "login",
+        element: <Login />,
+      },
+      {
+        path: "signup",
+        element: <Register />,
+      },
+     
+    ],
   },
 ]);
 
