@@ -33,7 +33,7 @@ const AddFood = () => {
     e.preventDefault();
     if (!user) {
       toast.error("You must be logged in to add food.");
-      navigate("/login"); 
+      navigate("/login");
       return;
     }
     if (!foodName || !foodImage || !foodQuantity || !pickupLocation || !expiredDate) { 
@@ -48,7 +48,7 @@ const AddFood = () => {
       foodImage,
       foodQuantity: parseInt(foodQuantity, 10),
       pickupLocation,
-      expiredDate, // Changed from expiredDateTime
+      expiredDate, 
       additionalNotes,
       donatorName: user.displayName || "Anonymous",
       donatorEmail: user.email,
@@ -57,15 +57,13 @@ const AddFood = () => {
       foodStatus: "available",
     };
 
-    console.log("Sending foodData:", foodData); 
-
     try {
-      const response = await fetch('http://localhost:3000/api/foods', { 
+      const response = await fetch('http://localhost:3000/api/foods', {
+        method: 'POST', 
         headers: {
           'Content-Type': 'application/json',
-          
         },
-        body: JSON.stringify(foodData),
+        body: JSON.stringify(foodData), 
       });
 
       if (!response.ok) {
@@ -73,8 +71,8 @@ const AddFood = () => {
         throw new Error(errorData.message || "Failed to add food item");
       }
 
-      
       toast.success("Food item added successfully!");
+      
       
       setFoodName("");
       setFoodImage("");

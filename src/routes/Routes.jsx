@@ -7,6 +7,7 @@ import AddFood from "../pages/AddFood";
 import PrivateRoute from "../components/PrivateRoute";
 import AvailableFoods from "../pages/AvailableFoods";
 import SingleFoodDetailsPage from "../pages/SingleFoodDetailsPage";
+import ManageMyFoods from "../pages/ManageMyFoods";
 
 const router = createBrowserRouter([
   {
@@ -34,7 +35,7 @@ const router = createBrowserRouter([
         path: "manage-my-foods",
         element: (
           <PrivateRoute>
-            <div>Manage My Foods Page</div>
+            <ManageMyFoods />
           </PrivateRoute>
         ),
       },
@@ -42,7 +43,7 @@ const router = createBrowserRouter([
         path: "my-food-requests",
         element: (
           <PrivateRoute>
-            <div>My Food Requests Page</div> 
+            <div>My Food Requests Page</div>
           </PrivateRoute>
         ),
       },
@@ -55,7 +56,7 @@ const router = createBrowserRouter([
         element: <Register />,
       },
       {
-        path: "food/:foodId", 
+        path: "food/:foodId",
         element: <SingleFoodDetailsPage />,
       },
     ],
