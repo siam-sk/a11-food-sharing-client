@@ -107,6 +107,8 @@ const SingleFoodDetailsPage = () => {
         throw new Error(errData.message || 'Failed to submit request.');
       }
       toast.success('Food request submitted successfully!');
+      
+      setFoodDetails(prevDetails => ({ ...prevDetails, foodStatus: "requested" }));
       closeRequestModal();
       
     } catch (err) {
