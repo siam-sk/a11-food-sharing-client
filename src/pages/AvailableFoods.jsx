@@ -2,7 +2,8 @@ import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import app from "../../firebase.init";
-import { motion } from "framer-motion"; 
+import { motion } from "framer-motion";
+import { useQuery } from '@tanstack/react-query';
 
 
 const FoodItemCard = ({ food, onNavigateToDetails }) => {
@@ -38,17 +39,29 @@ const FoodItemCard = ({ food, onNavigateToDetails }) => {
 };
 
 
+const fetchAvailableFoods = async () => {
+  const response = await fetch('http://localhost:3000/api/foods');
+  if (!response.ok) {
+    throw new Error('Network response was not ok while fetching available foods');
+  }
+  return response.json();
+};
+
 const AvailableFoods = () => {
-  const [allFoods, setAllFoods] = useState([]);
   const [displayedFoods, setDisplayedFoods] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
   const [sortOrder, setSortOrder] = useState("default");
   const [searchTerm, setSearchTerm] = useState("");
-  const [isThreeColumnLayout, setIsThreeColumnLayout] = useState(true); 
+  const [isThreeColumnLayout, setIsThreeColumnLayout] = useState(true);
 
   const [user, setUser] = useState(null);
   const auth = getAuth(app);
   const navigate = useNavigate();
+
+  // Fetching data with TanStack Query
+  const { data: allFoods = [], isLoading, error } = useQuery({
+    queryKey: ['availableFoods'],
+    queryFn: fetchAvailableFoods,
+  });
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -57,39 +70,15 @@ const AvailableFoods = () => {
     return () => unsubscribe();
   }, [auth]);
 
-  const fetchFoods = useCallback(async () => {
-    setIsLoading(true);
-    try {
-      const response = await fetch('http://localhost:3000/api/foods'); 
-      if (!response.ok) {
-        throw new Error('Failed to fetch foods');
-      }
-      const data = await response.json();
-      setAllFoods(data);
-      setDisplayedFoods(data); 
-    } catch (error) {
-      console.error("Error fetching foods:", error);
-      
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    fetchFoods();
-  }, [fetchFoods]);
-
   useEffect(() => {
     let foodsToDisplay = [...allFoods];
 
-    
     if (searchTerm) {
       foodsToDisplay = foodsToDisplay.filter(food =>
         food.foodName.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
 
-    
     if (sortOrder !== "default") {
       foodsToDisplay.sort((a, b) => {
         const dateA = new Date(a.expiredDate);
@@ -113,22 +102,24 @@ const AvailableFoods = () => {
     setSearchTerm(event.target.value);
   };
 
-  const toggleLayout = () => { 
+  const toggleLayout = () => {
     setIsThreeColumnLayout(prev => !prev);
   };
 
   const handleViewDetails = (foodId) => {
     if (!user) {
-      
       navigate("/login", { state: { from: `/food/${foodId}` } });
     } else {
-      
       navigate(`/food/${foodId}`);
     }
   };
 
   if (isLoading) {
     return <div className="flex justify-center items-center h-screen"><span className="loading loading-spinner loading-lg"></span></div>;
+  }
+
+  if (error) {
+    return <div className="text-center text-red-500 py-10">Error fetching foods: {error.message}</div>;
   }
 
   return (

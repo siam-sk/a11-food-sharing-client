@@ -3,19 +3,36 @@ import { useNavigate } from "react-router";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import app from "../../firebase.init";
 import { toast } from "react-toastify";
+import { useMutation, useQueryClient } from '@tanstack/react-query'; 
+
+// Async function to post food data
+const addNewFood = async (foodData) => {
+  const response = await fetch('http://localhost:3000/api/foods', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(foodData),
+  });
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.message || "Failed to add food item");
+  }
+  return response.json();
+};
 
 const AddFood = () => {
   const auth = getAuth(app);
   const navigate = useNavigate();
+  const queryClient = useQueryClient(); 
 
   const [user, setUser] = useState(null);
   const [foodName, setFoodName] = useState("");
   const [foodImage, setFoodImage] = useState("");
   const [foodQuantity, setFoodQuantity] = useState("");
   const [pickupLocation, setPickupLocation] = useState("");
-  const [expiredDate, setExpiredDate] = useState(""); 
+  const [expiredDate, setExpiredDate] = useState("");
   const [additionalNotes, setAdditionalNotes] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -29,6 +46,29 @@ const AddFood = () => {
     return () => unsubscribe();
   }, [auth]);
 
+  const addFoodMutation = useMutation({
+    mutationFn: addNewFood,
+    onSuccess: () => {
+      toast.success("Food item added successfully!");
+      
+      queryClient.invalidateQueries({ queryKey: ['availableFoods'] });
+      
+
+      
+      setFoodName("");
+      setFoodImage("");
+      setFoodQuantity("");
+      setPickupLocation("");
+      setExpiredDate("");
+      setAdditionalNotes("");
+      navigate("/available-foods");
+    },
+    onError: (error) => {
+      console.error("Error adding food: ", error);
+      toast.error(error.message || "Failed to add food item.");
+    },
+  });
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!user) {
@@ -36,19 +76,17 @@ const AddFood = () => {
       navigate("/login");
       return;
     }
-    if (!foodName || !foodImage || !foodQuantity || !pickupLocation || !expiredDate) { 
+    if (!foodName || !foodImage || !foodQuantity || !pickupLocation || !expiredDate) {
         toast.error("Please fill in all required fields.");
         return;
     }
-
-    setIsLoading(true);
 
     const foodData = {
       foodName,
       foodImage,
       foodQuantity: parseInt(foodQuantity, 10),
       pickupLocation,
-      expiredDate, 
+      expiredDate,
       additionalNotes,
       donatorName: user.displayName || "Anonymous",
       donatorEmail: user.email,
@@ -57,42 +95,13 @@ const AddFood = () => {
       foodStatus: "available",
     };
 
-    try {
-      const response = await fetch('http://localhost:3000/api/foods', {
-        method: 'POST', 
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(foodData), 
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Failed to add food item");
-      }
-
-      toast.success("Food item added successfully!");
-      
-      
-      setFoodName("");
-      setFoodImage("");
-      setFoodQuantity("");
-      setPickupLocation("");
-      setExpiredDate(""); 
-      setAdditionalNotes("");
-      navigate("/available-foods");
-    } catch (error) {
-      console.error("Error adding food: ", error);
-      toast.error(error.message || "Failed to add food item.");
-    } finally {
-      setIsLoading(false);
-    }
+    addFoodMutation.mutate(foodData); 
   };
 
-  
-  if (!user && auth.currentUser === null) {
+  if (!user && auth.currentUser === null && addFoodMutation.isLoading) { 
     return <div className="text-center p-10">Verifying user...</div>;
   }
+  
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -127,8 +136,8 @@ const AddFood = () => {
           <input type="text" id="pickupLocation" value={pickupLocation} onChange={(e) => setPickupLocation(e.target.value)} required className="input input-bordered w-full mt-1" />
         </div>
         <div>
-          <label htmlFor="expiredDate" className="block text-sm font-medium text-gray-700">Expired Date</label> {/* Changed label */}
-          <input type="date" id="expiredDate" value={expiredDate} onChange={(e) => setExpiredDate(e.target.value)} required className="input input-bordered w-full mt-1" /> {/* Changed type and id */}
+          <label htmlFor="expiredDate" className="block text-sm font-medium text-gray-700">Expired Date</label>
+          <input type="date" id="expiredDate" value={expiredDate} onChange={(e) => setExpiredDate(e.target.value)} required className="input input-bordered w-full mt-1" />
         </div>
         <div>
           <label htmlFor="additionalNotes" className="block text-sm font-medium text-gray-700">Additional Notes</label>
@@ -137,8 +146,8 @@ const AddFood = () => {
         <div>
             <p className="text-sm text-gray-600">Food Status: <span className="font-semibold">Available</span> (default)</p>
         </div>
-        <button type="submit" className="btn btn-primary w-full" disabled={isLoading}>
-          {isLoading ? "Adding..." : "Add Food"}
+        <button type="submit" className="btn btn-primary w-full" disabled={addFoodMutation.isPending}> 
+          {addFoodMutation.isPending ? <span className="loading loading-spinner"></span> : "Add Food"}
         </button>
       </form>
     </div>
