@@ -1,39 +1,72 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react"; 
 import { Link, useNavigate } from "react-router";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import app from "../../firebase.init";
 import { motion } from "framer-motion";
+import { useQuery } from '@tanstack/react-query'; 
 
-const mockFoods = [
-  { id: '1', foodName: 'Fresh Apples', foodImage: 'https://via.placeholder.com/300x200?text=Apples', quantity: 50, pickupLocation: 'Green Farm', donatorName: 'Alice Wonderland', expiredDateTime: '2025-06-25', additionalNotes: 'Organic Gala Apples' },
-  { id: '2', foodName: 'Homemade Bread', foodImage: 'https://via.placeholder.com/300x200?text=Bread', quantity: 30, pickupLocation: 'Local Bakery', donatorName: 'Bob The Baker', expiredDateTime: '2025-06-22', additionalNotes: 'Sourdough, freshly baked' },
-  { id: '3', foodName: 'Vegetable Mix', foodImage: 'https://via.placeholder.com/300x200?text=Veggies', quantity: 45, pickupLocation: 'Community Garden', donatorName: 'Charlie Garden', expiredDateTime: '2025-06-23', additionalNotes: 'Assorted seasonal vegetables' },
-  { id: '4', foodName: 'Pasta Packets', foodImage: 'https://via.placeholder.com/300x200?text=Pasta', quantity: 60, pickupLocation: 'SuperMart Storage', donatorName: 'Diana StoreManager', expiredDateTime: '2025-12-31', additionalNotes: 'Various types of pasta' },
-  { id: '5', foodName: 'Canned Soup', foodImage: 'https://via.placeholder.com/300x200?text=Soup', quantity: 55, pickupLocation: 'Food Bank', donatorName: 'Edward Helper', expiredDateTime: '2026-05-10', additionalNotes: 'Tomato and Chicken Noodle' },
-  { id: '6', foodName: 'Rice Bags', foodImage: 'https://via.placeholder.com/300x200?text=Rice', quantity: 70, pickupLocation: 'Warehouse GoodDeeds', donatorName: 'Fiona Giver', expiredDateTime: '2027-01-01', additionalNotes: '5kg Basmati Rice bags' },
-  { id: '7', foodName: 'Milk Cartons', foodImage: 'https://via.placeholder.com/300x200?text=Milk', quantity: 25, pickupLocation: 'Dairy Farm Outlet', donatorName: 'Gary Farmer', expiredDateTime: '2025-06-28', additionalNotes: 'Whole milk, 1 liter cartons' },
-];
+
+const fetchCoreFoodsData = async () => {
+  const response = await fetch('http://localhost:3000/api/foods');
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({ message: 'Failed to fetch foods' }));
+    throw new Error(errorData.message || 'Network response was not ok while fetching foods for homepage');
+  }
+  return response.json();
+};
+
 
 const FoodItemCard = ({ food, onNavigateToDetails }) => {
   return (
     <motion.div
-      className="card bg-base-100 shadow-xl"
+      className="card bg-base-100 shadow-xl overflow-hidden flex flex-col h-full" 
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
+      whileHover={{ scale: 1.03, boxShadow: "0px 10px 20px rgba(0,0,0,0.1)" }}
     >
-      <figure><img src={food.foodImage} alt={food.foodName} className="h-48 w-full object-cover" /></figure>
-      <div className="card-body">
-        <h2 className="card-title">{food.foodName}</h2>
-        <p>Quantity: {food.quantity}</p>
-        <p>Pickup: {food.pickupLocation}</p>
-        <p>Expires: {new Date(food.expiredDateTime).toLocaleDateString()}</p>
-        <p>Donator: {food.donatorName}</p>
-        {food.additionalNotes && <p className="text-sm text-gray-600">Notes: {food.additionalNotes}</p>}
-        <div className="card-actions justify-end">
+      <figure className="relative h-40 flex-shrink-0"> 
+        <img src={food.foodImage} alt={food.foodName} className="w-full h-full object-cover" />
+        {food.isUrgent && (
+          <div className="badge badge-error gap-1 absolute top-2 right-2 font-semibold text-white p-2 text-xs">
+            URGENT
+          </div>
+        )}
+      </figure>
+      <div className="card-body p-3 flex flex-col flex-grow">  
+        <h2 className="card-title text-lg lg:text-xl font-semibold mb-0.5 truncate" title={food.foodName}> 
+          {food.foodName}
+        </h2>
+        
+        <div className="flex items-center mb-1"> 
+          <div className="avatar mr-2">
+            <div className="w-6 h-6 lg:w-8 lg:h-8 rounded-full ring ring-primary ring-offset-base-100 ring-offset-1">
+              <img src={food.donatorImage || 'https://via.placeholder.com/40'} alt={food.donatorName || 'Donor'} />
+            </div>
+          </div>
+          <span className="text-sm lg:text-base text-gray-600 truncate" title={food.donatorName || 'Anonymous Donor'}> 
+            {food.donatorName || 'Anonymous Donor'}
+          </span>
+        </div>
+
+        <div className="text-sm text-gray-500 space-y-0.5 mb-1"> 
+          <p><span className="font-medium">Quantity:</span> {food.foodQuantity}</p>
+          <p className="truncate" title={food.pickupLocation}><span className="font-medium">Pickup:</span> {food.pickupLocation}</p>
+          <p><span className="font-medium">Expires:</span> {food.expiredDate ? new Date(food.expiredDate).toLocaleDateString() : 'N/A'}</p>
+        </div>
+
+        {food.additionalNotes && (
+          <p className="text-sm text-gray-500 mb-2 flex-grow min-h-[2rem] max-h-8 overflow-hidden" title={food.additionalNotes}> {/* Reduced min-h and max-h */}
+             <span className="font-medium">Notes:</span> {food.additionalNotes.length > 40 ? `${food.additionalNotes.substring(0, 40)}...` : food.additionalNotes} {/* Adjusted substring length */}
+          </p>
+        )}
+         {!food.additionalNotes && <div className="flex-grow min-h-[2rem]"></div>} 
+
+
+        <div className="card-actions justify-end mt-auto"> 
           <button
-            onClick={() => onNavigateToDetails(food.id)}
-            className="btn btn-primary btn-sm"
+            onClick={() => onNavigateToDetails(food._id)}
+            className="btn btn-primary btn-sm" 
           >
             View Details
           </button>
@@ -44,16 +77,24 @@ const FoodItemCard = ({ food, onNavigateToDetails }) => {
 };
 
 const HomePage = () => {
-  const [featuredFoods, setFeaturedFoods] = useState([]);
   const [user, setUser] = useState(null);
   const auth = getAuth(app);
   const navigate = useNavigate();
 
-  useEffect(() => {
+  const { data: allAvailableFoods = [], isLoading: isLoadingFoods, error: foodsError } = useQuery({
+    queryKey: ['homepageAvailableFoods'], 
+    queryFn: fetchCoreFoodsData,
+  });
+
+  const featuredFoods = useMemo(() => {
+    if (!allAvailableFoods || allAvailableFoods.length === 0) {
+      return [];
+    }
     
-    const sortedFoods = [...mockFoods].sort((a, b) => b.quantity - a.quantity);
-    setFeaturedFoods(sortedFoods.slice(0, 6));
-  }, []);
+    const sortedByQuantity = [...allAvailableFoods].sort((a, b) => (b.foodQuantity || 0) - (a.foodQuantity || 0));
+    return sortedByQuantity.slice(0, 6);
+  }, [allAvailableFoods]);
+
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -66,7 +107,6 @@ const HomePage = () => {
     if (!user) {
       navigate("/login", { state: { from: `/food/${foodId}` } }); 
     } else {
-      
       navigate(`/food/${foodId}`);
     }
   };
@@ -76,8 +116,7 @@ const HomePage = () => {
       {/* Hero Section */}
       <motion.section
         className="hero min-h-[60vh] bg-cover bg-center rounded-lg shadow-lg my-8"
-        // style={{ backgroundImage: "url('https://via.placeholder.com/1200x400?text=Delicious+Food+Sharing')" }}
-        style={{ backgroundImage: "url('/hero-banner.jpg')" }} // Assuming you add a local image
+        style={{ backgroundImage: "url('/banner.webp')" }}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 1 }}
@@ -92,7 +131,7 @@ const HomePage = () => {
               transition={{ duration: 0.5, delay: 0.2 }}
             >
               Welcome to SharedSpoon
-            </motion.h1> {/* Updated Name */}
+            </motion.h1>
             <motion.p 
               className="mb-5"
               initial={{ opacity: 0, y: 20 }}
@@ -116,11 +155,41 @@ const HomePage = () => {
         >
           Featured Foods
         </motion.h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {featuredFoods.map(food => (
-            <FoodItemCard key={food.id} food={food} onNavigateToDetails={handleViewDetails} />
-          ))}
-        </div>
+        {isLoadingFoods && (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[...Array(6)].map((_, index) => (
+              <div key={index} className="card bg-base-100 shadow-xl animate-pulse">
+                <div className="h-48 bg-gray-300"></div>
+                <div className="card-body p-4">
+                  <div className="h-6 bg-gray-300 rounded w-3/4 mb-2"></div>
+                  <div className="flex items-center mb-2">
+                    <div className="w-8 h-8 bg-gray-300 rounded-full mr-2"></div>
+                    <div className="h-4 bg-gray-300 rounded w-1/2"></div>
+                  </div>
+                  <div className="h-3 bg-gray-300 rounded w-full mb-1"></div>
+                  <div className="h-3 bg-gray-300 rounded w-5/6 mb-1"></div>
+                  <div className="h-3 bg-gray-300 rounded w-4/6 mb-3"></div>
+                  <div className="h-8 bg-gray-300 rounded w-1/3 ml-auto"></div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+        {foodsError && (
+          <div className="text-center text-red-500 py-10">
+            <p>Could not load featured foods: {foodsError.message}</p>
+          </div>
+        )}
+        {!isLoadingFoods && !foodsError && featuredFoods.length > 0 && (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {featuredFoods.map(food => (
+              <FoodItemCard key={food._id} food={food} onNavigateToDetails={handleViewDetails} />
+            ))}
+          </div>
+        )}
+        {!isLoadingFoods && !foodsError && featuredFoods.length === 0 && (
+           <p className="text-center text-xl text-gray-500 mt-10">No featured foods available at the moment.</p>
+        )}
         <div className="text-center mt-8">
           <Link to="/available-foods" className="btn btn-secondary">
             Show All Foods
@@ -133,7 +202,7 @@ const HomePage = () => {
         <motion.h2
           className="text-3xl font-bold text-center mb-8"
           initial={{ scale: 0.5, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
+          animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.5, delay: 0.4 }}
         >
           How It Works
