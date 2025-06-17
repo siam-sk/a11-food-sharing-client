@@ -28,22 +28,6 @@ const ManageMyFoods = () => {
   const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
   const [deletingFoodId, setDeletingFoodId] = useState(null);
 
-
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      if (currentUser) {
-        setUser(currentUser);
-        fetchMyFoods(currentUser.uid);
-      } else {
-        setUser(null);
-        setMyFoods([]);
-        setIsLoading(false);
-        navigate('/login'); 
-      }
-    });
-    return () => unsubscribe();
-  }, [auth, navigate]);
-
   const fetchMyFoods = useCallback(async (userId) => {
     if (!userId) return;
     setIsLoading(true);
@@ -62,6 +46,21 @@ const ManageMyFoods = () => {
       setIsLoading(false);
     }
   }, []);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      if (currentUser) {
+        setUser(currentUser);
+        fetchMyFoods(currentUser.uid);
+      } else {
+        setUser(null);
+        setMyFoods([]);
+        setIsLoading(false);
+        navigate('/login'); 
+      }
+    });
+    return () => unsubscribe();
+  }, [auth, navigate, fetchMyFoods]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
