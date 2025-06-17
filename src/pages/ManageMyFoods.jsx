@@ -22,7 +22,8 @@ const ManageMyFoods = () => {
     pickupLocation: '',
     expiredDate: '',
     additionalNotes: '',
-    foodStatus: 'available', 
+    foodStatus: 'available',
+    isUrgent: false, 
   });
 
   const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
@@ -74,10 +75,10 @@ const ManageMyFoods = () => {
       foodImage: food.foodImage,
       foodQuantity: food.foodQuantity.toString(),
       pickupLocation: food.pickupLocation,
-      
       expiredDate: food.expiredDate ? new Date(food.expiredDate).toISOString().split('T')[0] : '',
       additionalNotes: food.additionalNotes || '',
       foodStatus: food.foodStatus,
+      isUrgent: food.isUrgent || false, 
     });
     setIsUpdateModalOpen(true);
   };
@@ -236,6 +237,18 @@ const ManageMyFoods = () => {
               <div>
                 <label className="label"><span className="label-text">Additional Notes</span></label>
                 <textarea name="additionalNotes" value={formData.additionalNotes} onChange={handleInputChange} className="textarea textarea-bordered w-full" rows="3"></textarea>
+              </div>
+              <div className="form-control">
+                <label className="label cursor-pointer">
+                  <span className="label-text">Mark as Urgent</span>
+                  <input
+                    type="checkbox"
+                    name="isUrgent" // Add name attribute
+                    checked={formData.isUrgent}
+                    onChange={(e) => setFormData(prev => ({ ...prev, isUrgent: e.target.checked }))}
+                    className="checkbox checkbox-warning"
+                  />
+                </label>
               </div>
               <div className="modal-action mt-4">
                 <button type="button" className="btn" onClick={closeUpdateModal}>Cancel</button>

@@ -33,6 +33,7 @@ const AddFood = () => {
   const [pickupLocation, setPickupLocation] = useState("");
   const [expiredDate, setExpiredDate] = useState("");
   const [additionalNotes, setAdditionalNotes] = useState("");
+  const [isUrgent, setIsUrgent] = useState(false); 
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -50,10 +51,7 @@ const AddFood = () => {
     mutationFn: addNewFood,
     onSuccess: () => {
       toast.success("Food item added successfully!");
-      
       queryClient.invalidateQueries({ queryKey: ['availableFoods'] });
-      
-
       
       setFoodName("");
       setFoodImage("");
@@ -61,6 +59,7 @@ const AddFood = () => {
       setPickupLocation("");
       setExpiredDate("");
       setAdditionalNotes("");
+      setIsUrgent(false); 
       navigate("/available-foods");
     },
     onError: (error) => {
@@ -88,6 +87,7 @@ const AddFood = () => {
       pickupLocation,
       expiredDate,
       additionalNotes,
+      isUrgent, 
       donatorName: user.displayName || "Anonymous",
       donatorEmail: user.email,
       donatorImage: user.photoURL || "https://via.placeholder.com/40",
@@ -146,7 +146,18 @@ const AddFood = () => {
         <div>
             <p className="text-sm text-gray-600">Food Status: <span className="font-semibold">Available</span> (default)</p>
         </div>
-        <button type="submit" className="btn btn-primary w-full" disabled={addFoodMutation.isPending}> 
+        <div className="form-control">
+          <label className="label cursor-pointer">
+            <span className="label-text">Mark as Urgent (e.g., expiring soon)</span>
+            <input
+              type="checkbox"
+              checked={isUrgent}
+              onChange={(e) => setIsUrgent(e.target.checked)}
+              className="checkbox checkbox-warning"
+            />
+          </label>
+        </div>
+        <button type="submit" className="btn btn-primary w-full" disabled={addFoodMutation.isPending}>
           {addFoodMutation.isPending ? <span className="loading loading-spinner"></span> : "Add Food"}
         </button>
       </form>

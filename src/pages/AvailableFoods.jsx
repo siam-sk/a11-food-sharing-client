@@ -14,9 +14,18 @@ const FoodItemCard = ({ food, onNavigateToDetails }) => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
-      <figure><img src={food.foodImage} alt={food.foodName} className="h-48 w-full object-cover" /></figure>
+      <figure className="relative"> 
+        <img src={food.foodImage} alt={food.foodName} className="h-48 w-full object-cover" />
+        {food.isUrgent && (
+          <div className="badge badge-error gap-2 absolute top-2 right-2 font-semibold">
+            URGENT
+          </div>
+        )}
+      </figure>
       <div className="card-body">
-        <h2 className="card-title">{food.foodName}</h2>
+        <h2 className="card-title">
+          {food.foodName}
+        </h2>
         <div className="flex items-center my-2">
           <img src={food.donatorImage || 'https://via.placeholder.com/40'} alt={food.donatorName} className="w-8 h-8 rounded-full mr-2" />
           <span className="text-sm font-medium">{food.donatorName}</span>
@@ -57,7 +66,7 @@ const AvailableFoods = () => {
   const auth = getAuth(app);
   const navigate = useNavigate();
 
-  // Fetching data with TanStack Query
+  
   const { data: allFoods = [], isLoading, error } = useQuery({
     queryKey: ['availableFoods'],
     queryFn: fetchAvailableFoods,
