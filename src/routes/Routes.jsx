@@ -1,17 +1,19 @@
 import { createBrowserRouter } from "react-router";
-import RootLayout from "../layouts/RootLayout"; 
+import RootLayout from "../layouts/RootLayout";
 import Login from "../pages/Login";
 import Register from "../pages/Register";
 import HomePage from "../pages/HomePage";
+import AddFood from "../pages/AddFood";
+import PrivateRoute from "../components/PrivateRoute";
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <RootLayout />, 
-    
+    element: <RootLayout />,
+
     children: [
       {
-        index: true, 
+        index: true,
         element: <HomePage />,
       },
       {
@@ -20,15 +22,27 @@ const router = createBrowserRouter([
       },
       {
         path: "add-food",
-        element: <div>Add Food Page</div>, 
+        element: (
+          <PrivateRoute>
+            <AddFood />
+          </PrivateRoute>
+        ),
       },
       {
         path: "manage-my-foods",
-        element: <div>Manage My Foods Page</div>,
+        element: (
+          <PrivateRoute>
+            <div>Manage My Foods Page</div>
+          </PrivateRoute>
+        ),
       },
       {
         path: "my-food-requests",
-        element: <div>My Food Requests Page</div>, 
+        element: (
+          <PrivateRoute>
+            <div>My Food Requests Page</div>
+          </PrivateRoute>
+        ),
       },
       {
         path: "login",
@@ -38,7 +52,7 @@ const router = createBrowserRouter([
         path: "signup",
         element: <Register />,
       },
-     
+      
     ],
   },
 ]);

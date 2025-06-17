@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router";
+import { Link, useNavigate, useLocation } from "react-router"; 
 import { getAuth, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import app from "../../firebase.init";
 import { toast } from "react-toastify";
@@ -10,14 +10,17 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const auth = getAuth(app);
   const navigate = useNavigate();
+  const location = useLocation(); 
   const googleProvider = new GoogleAuthProvider();
+
+  const from = location.state?.from?.pathname || "/"; 
 
   const handleLogin = (e) => {
     e.preventDefault();
     signInWithEmailAndPassword(auth, email, password)
       .then(() => {
         toast.success("Login successful!");
-        navigate("/");
+        navigate(from, { replace: true }); 
       })
       .catch(() => {
         toast.error("Invalid email or password!");
@@ -28,7 +31,7 @@ const Login = () => {
     signInWithPopup(auth, googleProvider)
       .then(() => {
         toast.success("Google login successful!");
-        navigate("/");
+        navigate(from, { replace: true }); 
       })
       .catch(() => {
         toast.error("Google login failed!");
