@@ -42,8 +42,9 @@ const AvailableFoods = () => {
   const [allFoods, setAllFoods] = useState([]);
   const [displayedFoods, setDisplayedFoods] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [sortOrder, setSortOrder] = useState("default"); 
-  const [searchTerm, setSearchTerm] = useState(""); 
+  const [sortOrder, setSortOrder] = useState("default");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [isThreeColumnLayout, setIsThreeColumnLayout] = useState(true); 
 
   const [user, setUser] = useState(null);
   const auth = getAuth(app);
@@ -112,6 +113,10 @@ const AvailableFoods = () => {
     setSearchTerm(event.target.value);
   };
 
+  const toggleLayout = () => { 
+    setIsThreeColumnLayout(prev => !prev);
+  };
+
   const handleViewDetails = (foodId) => {
     if (!user) {
       
@@ -145,7 +150,7 @@ const AvailableFoods = () => {
             onChange={handleSearchChange}
           />
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2"> 
           <span className="label-text">Sort by Expire Date:</span>
           <button
             onClick={() => handleSortChange('asc')}
@@ -167,12 +172,19 @@ const AvailableFoods = () => {
                 Clear Sort
             </button>
           )}
+          <button 
+            onClick={toggleLayout}
+            className="btn btn-sm btn-accent"
+            title={isThreeColumnLayout ? "Switch to 2 Columns" : "Switch to 3 Columns"}
+          >
+            {isThreeColumnLayout ? "Layout: ▦" : "Layout: ⬓"} 
+          </button>
         </div>
       </div>
 
       
       {displayedFoods.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className={`grid gap-6 ${isThreeColumnLayout ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3' : 'grid-cols-1 md:grid-cols-2'}`}> {/* Dynamic grid columns */}
           {displayedFoods.map(food => (
             <FoodItemCard key={food._id} food={food} onNavigateToDetails={handleViewDetails} />
           ))}

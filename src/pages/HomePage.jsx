@@ -72,27 +72,37 @@ const HomePage = () => {
   };
 
   return (
-    <div className="container mx-auto px-4">
-      
+    <div className="container mx-auto px-4 py-8">
+      {/* Hero Section */}
       <motion.section
         className="hero min-h-[60vh] bg-cover bg-center rounded-lg shadow-lg my-8"
-        style={{ backgroundImage: "url('https://via.placeholder.com/1200x400?text=Delicious+Food+Sharing')" }}
+        // style={{ backgroundImage: "url('https://via.placeholder.com/1200x400?text=Delicious+Food+Sharing')" }}
+        style={{ backgroundImage: "url('/hero-banner.jpg')" }} // Assuming you add a local image
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 1 }}
       >
         <div className="hero-overlay bg-opacity-60 rounded-lg"></div>
         <div className="hero-content text-center text-neutral-content">
-          <motion.div
-            className="max-w-md"
-            initial={{ y: -50, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ delay: 0.5, duration: 0.8 }}
-          >
-            <h1 className="mb-5 text-5xl font-bold">Share More, Waste Less</h1>
-            <p className="mb-5">Join our community to share surplus food and help reduce food waste. Every meal shared makes a difference.</p>
+          <div className="max-w-md">
+            <motion.h1 
+              className="mb-5 text-5xl font-bold"
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+            >
+              Welcome to SharedSpoon
+            </motion.h1> {/* Updated Name */}
+            <motion.p 
+              className="mb-5"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.4 }}
+            >
+              Connecting communities, reducing food waste, and sharing abundance. Find or offer food with ease.
+            </motion.p>
             <Link to="/available-foods" className="btn btn-primary">Get Started</Link>
-          </motion.div>
+          </div>
         </div>
       </motion.section>
 

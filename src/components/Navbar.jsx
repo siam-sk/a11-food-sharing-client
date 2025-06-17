@@ -1,15 +1,17 @@
-import { Link } from "react-router"; 
+import { Link } from "react-router";
 import { useState, useEffect } from "react";
 import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
 import app from "../../firebase.init";
 
 const Navbar = () => {
   const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
   const auth = getAuth(app);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
+      setLoading(false); 
     });
     return () => unsubscribe();
   }, [auth]);
@@ -18,11 +20,30 @@ const Navbar = () => {
     signOut(auth).catch((error) => console.error("Logout Error:", error));
   };
 
+  if (loading) {
+    return (
+      <div className="navbar bg-base-100 shadow-md">
+        <div className="navbar-start">
+          <Link to="/" className="btn btn-ghost normal-case text-xl flex items-center">
+            <span className="font-bold text-primary">Shared</span><span className="font-semibold text-secondary">Spoon</span>
+          </Link>
+        </div>
+        <div className="navbar-center hidden lg:flex">
+          
+        </div>
+        <div className="navbar-end">
+          
+          <div className="w-24 h-8 bg-gray-200 animate-pulse rounded"></div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="navbar bg-base-100 shadow-md">
       <div className="navbar-start">
-        <Link to="/" className="btn btn-ghost normal-case text-2xl">
-          <span className="text-primary">Food</span><span className="text-secondary">Share</span> 
+        <Link to="/" className="btn btn-ghost normal-case text-xl flex items-center">
+          <span className="font-bold text-primary">Shared</span><span className="font-semibold text-secondary">Spoon</span>
         </Link>
       </div>
       <div className="navbar-center hidden lg:flex">
@@ -33,7 +54,8 @@ const Navbar = () => {
           <li>
             <Link to="/available-foods">Available Foods</Link>
           </li>
-          {user && (
+          
+          {!loading && user && (
             <>
               <li>
                 <Link to="/add-food">Add Food</Link>
@@ -49,7 +71,9 @@ const Navbar = () => {
         </ul>
       </div>
       <div className="navbar-end">
-        {!user ? (
+        {loading ? (
+          <span className="loading loading-sm"></span> 
+        ) : !user ? (
           <>
             <Link to="/login" className="btn btn-primary btn-sm">
               Login
@@ -73,7 +97,7 @@ const Navbar = () => {
               className="menu menu-compact dropdown-content mt-3 p-2 shadow bg-base-100 rounded-box w-52"
             >
               <li>
-                <button onClick={handleLogout} className="btn btn-error btn-sm">
+                <button onClick={handleLogout} className="btn btn-error btn-sm w-full"> 
                   Logout
                 </button>
               </li>
