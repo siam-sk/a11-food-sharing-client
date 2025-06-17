@@ -3,19 +3,33 @@ import { useNavigate } from "react-router";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import app from "../../firebase.init";
 import { toast } from "react-toastify";
-import { useMutation, useQueryClient } from '@tanstack/react-query'; 
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 
-// Async function to post food data
 const addNewFood = async (foodData) => {
+  const token = localStorage.getItem('authToken');
+  const headers = {
+    'Content-Type': 'application/json',
+  };
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  } else {
+    console.warn("Auth token not found for adding food. The request will likely fail.");
+  }
+
   const response = await fetch('http://localhost:3000/api/foods', {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
+    headers: headers,
     body: JSON.stringify(foodData),
   });
+
+  if (response.status === 401 || response.status === 403) {
+      localStorage.removeItem('authToken');
+      const errorData = await response.json().catch(() => ({}));
+      toast.error(errorData.message || "Authentication failed. Please login again.");
+      throw new Error(errorData.message || "Authentication failed");
+  }
   if (!response.ok) {
-    const errorData = await response.json();
+    const errorData = await response.json().catch(() => ({ message: "Failed to add food item" }));
     throw new Error(errorData.message || "Failed to add food item");
   }
   return response.json();
@@ -24,7 +38,7 @@ const addNewFood = async (foodData) => {
 const AddFood = () => {
   const auth = getAuth(app);
   const navigate = useNavigate();
-  const queryClient = useQueryClient(); 
+  const queryClient = useQueryClient();
 
   const [user, setUser] = useState(null);
   const [foodName, setFoodName] = useState("");
@@ -33,7 +47,7 @@ const AddFood = () => {
   const [pickupLocation, setPickupLocation] = useState("");
   const [expiredDate, setExpiredDate] = useState("");
   const [additionalNotes, setAdditionalNotes] = useState("");
-  const [isUrgent, setIsUrgent] = useState(false); 
+  const [isUrgent, setIsUrgent] = useState(false);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -59,7 +73,7 @@ const AddFood = () => {
       setPickupLocation("");
       setExpiredDate("");
       setAdditionalNotes("");
-      setIsUrgent(false); 
+      setIsUrgent(false);
       navigate("/available-foods");
     },
     onError: (error) => {
@@ -87,7 +101,7 @@ const AddFood = () => {
       pickupLocation,
       expiredDate,
       additionalNotes,
-      isUrgent, 
+      isUrgent,
       donatorName: user.displayName || "Anonymous",
       donatorEmail: user.email,
       donatorImage: user.photoURL || "https://via.placeholder.com/40",
@@ -95,10 +109,10 @@ const AddFood = () => {
       foodStatus: "available",
     };
 
-    addFoodMutation.mutate(foodData); 
+    addFoodMutation.mutate(foodData);
   };
 
-  if (!user && auth.currentUser === null && addFoodMutation.isLoading) { 
+  if (!user && auth.currentUser === null && addFoodMutation.isLoading) {
     return <div className="text-center p-10">Verifying user...</div>;
   }
   

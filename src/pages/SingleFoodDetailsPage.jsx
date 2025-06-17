@@ -65,7 +65,7 @@ const SingleFoodDetailsPage = () => {
 
   const closeRequestModal = () => {
     setIsModalOpen(false);
-    setAdditionalNotesModal(''); 
+    setAdditionalNotesModal('');
   };
 
   const handleRequestSubmit = async (e) => {
@@ -76,6 +76,15 @@ const SingleFoodDetailsPage = () => {
     }
 
     setIsSubmittingRequest(true);
+    const token = localStorage.getItem('authToken');
+
+    if (!token) {
+      toast.error("Authentication token not found. Please log in again.");
+      setIsSubmittingRequest(false);
+      navigate('/login');
+      return;
+    }
+
     const requestData = {
       foodId: foodDetails._id,
       foodName: foodDetails.foodName,
@@ -83,13 +92,12 @@ const SingleFoodDetailsPage = () => {
       foodDonatorEmail: foodDetails.donatorEmail,
       foodDonatorName: foodDetails.donatorName,
       requesterEmail: user.email,
-      requesterName: user.displayName || "Anonymous Requester", 
-      requestDate: new Date().toISOString(), 
+      requesterName: user.displayName || "Anonymous Requester",
+      requestDate: new Date().toISOString(),
       pickupLocation: foodDetails.pickupLocation,
-      expiredDate: foodDetails.expiredDate, 
-      additionalNotes: additionalNotesModal, 
-      originalFoodNotes: foodDetails.additionalNotes, 
-      foodStatus: "requested", 
+      expiredDate: foodDetails.expiredDate,
+      additionalNotes: additionalNotesModal,
+      originalFoodNotes: foodDetails.additionalNotes,
     };
 
     try {
@@ -97,20 +105,27 @@ const SingleFoodDetailsPage = () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          
+          'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify(requestData),
       });
 
+      if (response.status === 401 || response.status === 403) {
+        localStorage.removeItem('authToken');
+        const errData = await response.json().catch(() => ({}));
+        toast.error(errData.message || "Authentication failed. Please login again.");
+        navigate('/login');
+        throw new Error(errData.message || 'Authentication failed.');
+      }
+
       if (!response.ok) {
-        const errData = await response.json();
-        throw new Error(errData.message || 'Failed to submit request.');
+        const errData = await response.json().catch(() => ({ message: 'Failed to submit request.' }));
+        throw new Error(errData.message);
       }
       toast.success('Food request submitted successfully!');
       
       setFoodDetails(prevDetails => ({ ...prevDetails, foodStatus: "requested" }));
       closeRequestModal();
-      
     } catch (err) {
       toast.error(err.message);
       console.error("Request submission error:", err);

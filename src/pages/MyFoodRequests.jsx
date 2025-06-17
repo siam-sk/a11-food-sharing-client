@@ -13,24 +13,50 @@ const MyFoodRequests = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const fetchMyRequests = useCallback(async (email) => {
-    if (!email) return;
+  const fetchMyRequests = useCallback(async (firebaseUserEmail) => {
+    if (!firebaseUserEmail) {
+        setIsLoading(false);
+        return;
+    }
     setIsLoading(true);
     setError(null);
+    const token = localStorage.getItem('authToken');
+    const headers = {
+      'Content-Type': 'application/json',
+    };
+
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    } else {
+      toast.warn("Authentication token not found. Please log in again.");
+      setIsLoading(false);
+      navigate('/login');
+      return;
+    }
+
     try {
-      const response = await fetch(`http://localhost:3000/api/my-food-requests?email=${email}`);
+      const response = await fetch(`http://localhost:3000/api/my-food-requests`, { headers });
+
+      if (response.status === 401 || response.status === 403) {
+        localStorage.removeItem('authToken');
+        const errData = await response.json().catch(() => ({}));
+        toast.error(errData.message || "Authentication failed. Please login again.");
+        navigate('/login');
+        throw new Error(errData.message || 'Authentication failed.');
+      }
       if (!response.ok) {
-        throw new Error('Failed to fetch your food requests.');
+        const errData = await response.json().catch(() => ({}));
+        throw new Error(errData.message || 'Failed to fetch your food requests.');
       }
       const data = await response.json();
       setMyRequests(data);
     } catch (err) {
       setError(err.message);
-      toast.error(err.message);
+      console.error("Error fetching my food requests:", err);
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [navigate]);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -41,6 +67,7 @@ const MyFoodRequests = () => {
         setUser(null);
         setMyRequests([]);
         setIsLoading(false);
+        localStorage.removeItem('authToken');
         navigate('/login');
       }
     });

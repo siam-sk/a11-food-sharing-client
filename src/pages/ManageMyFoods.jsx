@@ -23,30 +23,46 @@ const ManageMyFoods = () => {
     expiredDate: '',
     additionalNotes: '',
     foodStatus: 'available',
-    isUrgent: false, 
+    isUrgent: false,
   });
 
   const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
   const [deletingFoodId, setDeletingFoodId] = useState(null);
 
-  const fetchMyFoods = useCallback(async (userId) => {
-    if (!userId) return;
+  const fetchMyFoods = useCallback(async (firebaseUserId) => {
+    if (!firebaseUserId) return;
     setIsLoading(true);
     setError(null);
+    const token = localStorage.getItem('authToken');
+    const headers = {};
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    } else {
+      toast.warn("Auth token not found. Fetching your foods will likely fail.");
+    }
+
     try {
-      const response = await fetch(`http://localhost:3000/api/my-foods?userId=${userId}`);
+      const response = await fetch(`http://localhost:3000/api/my-foods`, { headers });
+      if (response.status === 401 || response.status === 403) {
+        localStorage.removeItem('authToken');
+        const errData = await response.json().catch(() => ({}));
+        toast.error(errData.message || "Authentication failed. Please login again.");
+        navigate('/login');
+        throw new Error(errData.message || 'Authentication failed.');
+      }
       if (!response.ok) {
-        throw new Error('Failed to fetch your food items.');
+        const errData = await response.json().catch(() => ({}));
+        throw new Error(errData.message || 'Failed to fetch your food items.');
       }
       const data = await response.json();
       setMyFoods(data);
     } catch (err) {
+      console.error("Error fetching my foods:", err);
       setError(err.message);
-      toast.error(err.message);
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [navigate, auth]);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -57,7 +73,8 @@ const ManageMyFoods = () => {
         setUser(null);
         setMyFoods([]);
         setIsLoading(false);
-        navigate('/login'); 
+        localStorage.removeItem('authToken');
+        navigate('/login');
       }
     });
     return () => unsubscribe();
@@ -76,9 +93,9 @@ const ManageMyFoods = () => {
       foodQuantity: food.foodQuantity.toString(),
       pickupLocation: food.pickupLocation,
       expiredDate: food.expiredDate ? new Date(food.expiredDate).toISOString().split('T')[0] : '',
-      additionalNotes: food.additionalNotes || '',
-      foodStatus: food.foodStatus,
-      isUrgent: food.isUrgent || false, 
+      additionalNotes: food.additionalNotes || "",
+      foodStatus: food.foodStatus || 'available',
+      isUrgent: food.isUrgent || false,
     });
     setIsUpdateModalOpen(true);
   };
@@ -92,27 +109,49 @@ const ManageMyFoods = () => {
     e.preventDefault();
     if (!editingFood || !user) return;
 
+    const token = localStorage.getItem('authToken');
+    if (!token) {
+      toast.error("Authentication token not found. Please log in again.");
+      navigate('/login');
+      return;
+    }
+
     const updatedFoodPayload = {
       ...formData,
       foodQuantity: parseInt(formData.foodQuantity, 10),
-      userId: user.uid, 
     };
+    delete updatedFoodPayload._id;
+
 
     try {
       const response = await fetch(`http://localhost:3000/api/foods/${editingFood._id}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
         body: JSON.stringify(updatedFoodPayload),
       });
-      if (!response.ok) {
-        const errData = await response.json();
-        throw new Error(errData.message || 'Failed to update food item.');
+
+      if (response.status === 401 || response.status === 403) {
+        localStorage.removeItem('authToken');
+        const errData = await response.json().catch(() => ({}));
+        toast.error(errData.message || "Authentication failed. Please login again.");
+        navigate('/login');
+        throw new Error(errData.message || 'Authentication failed.');
       }
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ message: 'Failed to update food item' }));
+        throw new Error(errorData.message);
+      }
+
       toast.success('Food item updated successfully!');
-      fetchMyFoods(user.uid); 
-      closeUpdateModal();
-    } catch (err) {
-      toast.error(err.message);
+      setIsUpdateModalOpen(false);
+      fetchMyFoods(user.uid);
+    } catch (error) {
+      toast.error(`Update failed: ${error.message}`);
+      console.error("Update error:", error);
     }
   };
 
@@ -128,19 +167,43 @@ const ManageMyFoods = () => {
 
   const handleDeleteConfirm = async () => {
     if (!deletingFoodId || !user) return;
+
+    const token = localStorage.getItem('authToken');
+    if (!token) {
+      toast.error("Authentication token not found. Please log in again.");
+      navigate('/login');
+      return;
+    }
+
     try {
-      const response = await fetch(`http://localhost:3000/api/foods/${deletingFoodId}?userId=${user.uid}`, {
+      const response = await fetch(`http://localhost:3000/api/foods/${deletingFoodId}`, {
         method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
       });
-      if (!response.ok) {
-        const errData = await response.json();
-        throw new Error(errData.message || 'Failed to delete food item.');
+
+      if (response.status === 401 || response.status === 403) {
+        localStorage.removeItem('authToken');
+        const errData = await response.json().catch(() => ({}));
+        toast.error(errData.message || "Authentication failed. Please login again.");
+        navigate('/login');
+        throw new Error(errData.message || 'Authentication failed.');
       }
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ message: 'Failed to delete food item' }));
+        throw new Error(errorData.message);
+      }
+
       toast.success('Food item deleted successfully!');
-      setMyFoods(prevFoods => prevFoods.filter(food => food._id !== deletingFoodId));
-      closeDeleteConfirm();
-    } catch (err) {
-      toast.error(err.message);
+      fetchMyFoods(user.uid);
+    } catch (error) {
+      toast.error(`Delete failed: ${error.message}`);
+      console.error("Delete error:", error);
+    } finally {
+      setIsDeleteConfirmOpen(false);
+      setDeletingFoodId(null);
     }
   };
 
@@ -151,7 +214,7 @@ const ManageMyFoods = () => {
     return <div className="text-center text-red-500 py-10">{error}</div>;
   }
   if (!user) {
-    return <div className="text-center py-10">Please log in to manage your foods.</div>; 
+    return <div className="text-center py-10">Please log in to manage your foods.</div>;
   }
 
   return (
@@ -243,7 +306,7 @@ const ManageMyFoods = () => {
                   <span className="label-text">Mark as Urgent</span>
                   <input
                     type="checkbox"
-                    name="isUrgent" // Add name attribute
+                    name="isUrgent"
                     checked={formData.isUrgent}
                     onChange={(e) => setFormData(prev => ({ ...prev, isUrgent: e.target.checked }))}
                     className="checkbox checkbox-warning"

@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router"; 
-import { getAuth, createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
+import { Link, useNavigate } from "react-router";
+import { getAuth, createUserWithEmailAndPassword, updateProfile, signOut } from "firebase/auth";
 import app from "../../firebase.init";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -12,6 +12,36 @@ const Register = () => {
   const [password, setPassword] = useState("");
   const auth = getAuth(app);
   const navigate = useNavigate();
+
+  const getCustomAuthToken = async (firebaseUser) => {
+    try {
+      const idToken = await firebaseUser.getIdToken();
+      const response = await fetch('http://localhost:3000/api/auth/generate-token', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ idToken }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ message: 'Failed to parse error from token endpoint' }));
+        throw new Error(errorData.message || 'Failed to get custom auth token');
+      }
+
+      const data = await response.json();
+      if (data.authToken) {
+        localStorage.setItem('authToken', data.authToken);
+        console.log('Custom auth token stored after registration.');
+      } else {
+        throw new Error('Auth token not found in server response');
+      }
+    } catch (error) {
+      console.error("Error getting or storing custom auth token during registration:", error);
+      toast.error(`Token exchange failed: ${error.message}. Please try logging in.`);
+      localStorage.removeItem('authToken');
+    }
+  };
 
   const validatePassword = (password) => {
     if (password.length < 6) {
@@ -37,23 +67,25 @@ const Register = () => {
     }
 
     createUserWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        // Signed in
+      .then(async (userCredential) => {
         const user = userCredential.user;
-        updateProfile(user, {
-          displayName: name,
-          photoURL: photoURL,
-        })
-          .then(() => {
-            toast.success("Registration successful!");
-            navigate("/"); 
-          })
-          .catch((error) => {
-            toast.error("Failed to update profile: " + error.message);
+        try {
+          await updateProfile(user, {
+            displayName: name,
+            photoURL: photoURL,
           });
+          toast.success("Registration successful! Profile updated.");
+          await getCustomAuthToken(user);
+          navigate("/");
+        } catch (profileError) {
+          toast.error("Failed to update profile: " + profileError.message);
+          await getCustomAuthToken(user);
+          navigate("/");
+        }
       })
       .catch((error) => {
         toast.error("Registration failed: " + error.message);
+        localStorage.removeItem('authToken');
       });
   };
 

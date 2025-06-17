@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { Link, useNavigate, useLocation } from "react-router"; 
-import { getAuth, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { Link, useNavigate, useLocation } from "react-router";
+import { getAuth, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, signOut } from "firebase/auth";
 import app from "../../firebase.init";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -10,31 +10,67 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const auth = getAuth(app);
   const navigate = useNavigate();
-  const location = useLocation(); 
+  const location = useLocation();
   const googleProvider = new GoogleAuthProvider();
 
-  const from = location.state?.from?.pathname || "/"; 
+  const from = location.state?.from?.pathname || "/";
+
+  const getCustomAuthToken = async (firebaseUser) => {
+    try {
+      const idToken = await firebaseUser.getIdToken();
+      const response = await fetch('http://localhost:3000/api/auth/generate-token', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ idToken }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ message: 'Failed to parse error from token endpoint' }));
+        throw new Error(errorData.message || 'Failed to get custom auth token');
+      }
+
+      const data = await response.json();
+      if (data.authToken) {
+        localStorage.setItem('authToken', data.authToken);
+        console.log('Custom auth token stored.');
+      } else {
+        throw new Error('Auth token not found in server response');
+      }
+    } catch (error) {
+      console.error("Error getting or storing custom auth token:", error);
+      toast.error(`Token exchange failed: ${error.message}. Please try logging in again.`);
+      localStorage.removeItem('authToken');
+    }
+  };
 
   const handleLogin = (e) => {
     e.preventDefault();
     signInWithEmailAndPassword(auth, email, password)
-      .then(() => {
+      .then(async (userCredential) => {
         toast.success("Login successful!");
-        navigate(from, { replace: true }); 
+        await getCustomAuthToken(userCredential.user);
+        navigate(from, { replace: true });
       })
-      .catch(() => {
+      .catch((error) => {
         toast.error("Invalid email or password!");
+        console.error("Login error:", error);
+        localStorage.removeItem('authToken');
       });
   };
 
   const handleGoogleLogin = () => {
     signInWithPopup(auth, googleProvider)
-      .then(() => {
+      .then(async (result) => {
         toast.success("Google login successful!");
-        navigate(from, { replace: true }); 
+        await getCustomAuthToken(result.user);
+        navigate(from, { replace: true });
       })
-      .catch(() => {
-        toast.error("Google login failed!");
+      .catch((error) => {
+        toast.error("Google login failed. Please try again.");
+        console.error("Google login error:", error);
+        localStorage.removeItem('authToken');
       });
   };
 

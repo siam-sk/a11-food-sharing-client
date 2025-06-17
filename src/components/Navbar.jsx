@@ -2,6 +2,7 @@ import { Link } from "react-router";
 import { useState, useEffect } from "react";
 import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
 import app from "../../firebase.init";
+import { toast } from "react-toastify";
 
 const Navbar = () => {
   const [user, setUser] = useState(null);
@@ -11,13 +12,21 @@ const Navbar = () => {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
-      setLoading(false); 
+      setLoading(false);
     });
     return () => unsubscribe();
   }, [auth]);
 
   const handleLogout = () => {
-    signOut(auth).catch((error) => console.error("Logout Error:", error));
+    signOut(auth)
+      .then(() => {
+        localStorage.removeItem('authToken');
+        toast.success("Logged out successfully.");
+      })
+      .catch((error) => {
+        console.error("Logout Error:", error);
+        toast.error("Logout failed: " + error.message);
+      });
   };
 
   if (loading) {
@@ -72,7 +81,7 @@ const Navbar = () => {
       </div>
       <div className="navbar-end">
         {loading ? (
-          <span className="loading loading-sm"></span> 
+          <span className="loading loading-sm"></span>
         ) : !user ? (
           <>
             <Link to="/login" className="btn btn-primary btn-sm">
@@ -97,7 +106,7 @@ const Navbar = () => {
               className="menu menu-compact dropdown-content mt-3 p-2 shadow bg-base-100 rounded-box w-52"
             >
               <li>
-                <button onClick={handleLogout} className="btn btn-error btn-sm w-full"> 
+                <button onClick={handleLogout} className="btn btn-error btn-sm w-full">
                   Logout
                 </button>
               </li>
