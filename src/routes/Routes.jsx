@@ -1,6 +1,7 @@
 import { createBrowserRouter } from "react-router";
 import Navbar from "../components/Navbar";
 import Login from "../pages/Login";
+import Register from "../pages/Register"; // Add this import
 
 const router = createBrowserRouter([
   {
@@ -62,7 +63,7 @@ const router = createBrowserRouter([
     element: (
       <>
         <Navbar />
-        <div>Signup Page</div>
+        <Register /> {/* Change this line */}
       </>
     ),
   },
