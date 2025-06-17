@@ -67,7 +67,7 @@ const FoodItemCard = ({ food, onNavigateToDetails }) => {
 
 
 const fetchAvailableFoods = async () => {
-  const response = await fetch('http://localhost:3000/api/foods');
+  const response = await fetch('https://a11-food-sharing-server-three.vercel.app/api/foods');
   if (!response.ok) {
     throw new Error('Network response was not ok while fetching available foods');
   }

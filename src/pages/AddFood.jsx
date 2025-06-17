@@ -17,7 +17,7 @@ const addNewFood = async (foodData) => {
     console.warn("Auth token not found for adding food. The request will likely fail.");
   }
 
-  const response = await fetch('http://localhost:3000/api/foods', {
+  const response = await fetch('https://a11-food-sharing-server-three.vercel.app/api/foods', {
     method: 'POST',
     headers: headers,
     body: JSON.stringify(foodData),

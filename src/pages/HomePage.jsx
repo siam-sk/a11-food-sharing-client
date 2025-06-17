@@ -7,7 +7,7 @@ import { useQuery } from '@tanstack/react-query';
 
 
 const fetchCoreFoodsData = async () => {
-  const response = await fetch('http://localhost:3000/api/foods');
+  const response = await fetch('https://a11-food-sharing-server-three.vercel.app/api/foods');
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({ message: 'Failed to fetch foods' }));
     throw new Error(errorData.message || 'Network response was not ok while fetching foods for homepage');

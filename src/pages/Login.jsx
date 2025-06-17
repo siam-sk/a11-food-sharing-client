@@ -20,7 +20,7 @@ const Login = () => {
   const getCustomAuthToken = async (firebaseUser) => {
     try {
       const idToken = await firebaseUser.getIdToken();
-      const response = await fetch('http://localhost:3000/api/auth/generate-token', {
+      const response = await fetch('https://a11-food-sharing-server-three.vercel.app/api/auth/generate-token', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -144,7 +144,7 @@ const Login = () => {
             <div>
               <button
                 type="submit"
-                className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-sky-600 hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500"
+                className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-sky-600 hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500 cursor-pointer"
               >
                 Sign in
               </button>
@@ -164,7 +164,7 @@ const Login = () => {
             <div className="mt-6">
               <button
                 onClick={handleGoogleLogin}
-                className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500"
+                className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500 cursor-pointer"
               >
                 <span className="sr-only">Sign in with Google</span>
                 <FcGoogle className="h-5 w-5 mr-2" aria-hidden="true" />

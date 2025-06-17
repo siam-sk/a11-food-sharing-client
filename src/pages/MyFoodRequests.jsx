@@ -35,7 +35,7 @@ const MyFoodRequests = () => {
     }
 
     try {
-      const response = await fetch(`http://localhost:3000/api/my-food-requests`, { headers });
+      const response = await fetch(`https://a11-food-sharing-server-three.vercel.app/api/my-food-requests`, { headers });
 
       if (response.status === 401 || response.status === 403) {
         localStorage.removeItem('authToken');

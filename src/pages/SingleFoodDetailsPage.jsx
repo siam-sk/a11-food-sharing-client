@@ -31,7 +31,7 @@ const SingleFoodDetailsPage = () => {
       setIsLoading(true);
       setError(null);
       try {
-        const response = await fetch(`http://localhost:3000/api/foods/${foodId}`);
+        const response = await fetch(`https://a11-food-sharing-server-three.vercel.app/api/foods/${foodId}`);
         if (!response.ok) {
           if (response.status === 404) {
             throw new Error('Food item not found.');
@@ -101,7 +101,7 @@ const SingleFoodDetailsPage = () => {
     };
 
     try {
-      const response = await fetch('http://localhost:3000/api/food-requests', {
+      const response = await fetch('https://a11-food-sharing-server-three.vercel.app/api/food-requests', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

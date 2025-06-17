@@ -9,6 +9,7 @@ import AvailableFoods from "../pages/AvailableFoods";
 import SingleFoodDetailsPage from "../pages/SingleFoodDetailsPage";
 import ManageMyFoods from "../pages/ManageMyFoods";
 import MyFoodRequests from "../pages/MyFoodRequests";
+import NotFound from "../pages/NotFound";
 
 const router = createBrowserRouter([
   {
@@ -59,6 +60,10 @@ const router = createBrowserRouter([
       {
         path: "food/:foodId",
         element: <SingleFoodDetailsPage />,
+      },
+      {
+        path: "*",
+        element: <NotFound />,
       },
     ],
   },

@@ -42,7 +42,7 @@ const ManageMyFoods = () => {
     }
 
     try {
-      const response = await fetch(`http://localhost:3000/api/my-foods`, { headers });
+      const response = await fetch(`https://a11-food-sharing-server-three.vercel.app/api/my-foods`, { headers });
       if (response.status === 401 || response.status === 403) {
         localStorage.removeItem('authToken');
         const errData = await response.json().catch(() => ({}));
@@ -124,7 +124,7 @@ const ManageMyFoods = () => {
 
 
     try {
-      const response = await fetch(`http://localhost:3000/api/foods/${editingFood._id}`, {
+      const response = await fetch(`https://a11-food-sharing-server-three.vercel.app/api/foods/${editingFood._id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -176,7 +176,7 @@ const ManageMyFoods = () => {
     }
 
     try {
-      const response = await fetch(`http://localhost:3000/api/foods/${deletingFoodId}`, {
+      const response = await fetch(`https://a11-food-sharing-server-three.vercel.app/api/foods/${deletingFoodId}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`,
