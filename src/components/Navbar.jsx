@@ -22,7 +22,7 @@ const Navbar = () => {
     <div className="navbar bg-base-100 shadow-md">
       <div className="navbar-start">
         <Link to="/" className="btn btn-ghost normal-case text-2xl">
-          <span className="text-primary">Food</span><span className="text-secondary">Share</span> {/* Example styling */}
+          <span className="text-primary">Food</span><span className="text-secondary">Share</span> 
         </Link>
       </div>
       <div className="navbar-center hidden lg:flex">

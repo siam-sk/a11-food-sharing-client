@@ -13,7 +13,7 @@ const AddFood = () => {
   const [foodImage, setFoodImage] = useState("");
   const [foodQuantity, setFoodQuantity] = useState("");
   const [pickupLocation, setPickupLocation] = useState("");
-  const [expiredDate, setExpiredDate] = useState(""); // Changed from expiredDateTime
+  const [expiredDate, setExpiredDate] = useState(""); 
   const [additionalNotes, setAdditionalNotes] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
@@ -23,7 +23,7 @@ const AddFood = () => {
         setUser(currentUser);
       } else {
         setUser(null);
-        // No need to navigate here, PrivateRoute handles unauthorized access
+        
       }
     });
     return () => unsubscribe();
@@ -33,10 +33,10 @@ const AddFood = () => {
     e.preventDefault();
     if (!user) {
       toast.error("You must be logged in to add food.");
-      navigate("/login"); // Should be handled by PrivateRoute, but good fallback
+      navigate("/login"); 
       return;
     }
-    if (!foodName || !foodImage || !foodQuantity || !pickupLocation || !expiredDate) { // Changed from expiredDateTime
+    if (!foodName || !foodImage || !foodQuantity || !pickupLocation || !expiredDate) { 
         toast.error("Please fill in all required fields.");
         return;
     }
@@ -57,15 +57,13 @@ const AddFood = () => {
       foodStatus: "available",
     };
 
-    console.log("Sending foodData:", foodData); // Add this line to check the value
+    console.log("Sending foodData:", foodData); 
 
     try {
-      const response = await fetch('http://localhost:3000/api/foods', { // Ensure your server port is correct
-        method: 'POST',
+      const response = await fetch('http://localhost:3000/api/foods', { 
         headers: {
           'Content-Type': 'application/json',
-          // Optional: You might want to send an auth token for backend verification
-          // 'Authorization': `Bearer ${await user.getIdToken()}`
+          
         },
         body: JSON.stringify(foodData),
       });
@@ -75,14 +73,14 @@ const AddFood = () => {
         throw new Error(errorData.message || "Failed to add food item");
       }
 
-      // const result = await response.json(); // Contains insertedId
+      
       toast.success("Food item added successfully!");
       
       setFoodName("");
       setFoodImage("");
       setFoodQuantity("");
       setPickupLocation("");
-      setExpiredDate(""); // Changed from expiredDateTime
+      setExpiredDate(""); 
       setAdditionalNotes("");
       navigate("/available-foods");
     } catch (error) {
@@ -93,7 +91,7 @@ const AddFood = () => {
     }
   };
 
-  // This loading state is for user auth, PrivateRoute also has a loading state
+  
   if (!user && auth.currentUser === null) {
     return <div className="text-center p-10">Verifying user...</div>;
   }
