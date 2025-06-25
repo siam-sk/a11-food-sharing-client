@@ -8,6 +8,10 @@ SharedSpoon is a full-stack web application designed to connect individuals and 
 
 [https://a11-food-sharing.web.app/](https://a11-food-sharing.web.app/)
 
+## Live Demo Screenshot
+
+![SharedSpoon Screenshot](public/firefox_SdXOz3fLY0.png)
+
 ## Key Features
 
 *   **User Authentication:** Secure registration and login using Firebase (Email/Password and Google Sign-In).
