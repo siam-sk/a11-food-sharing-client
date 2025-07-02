@@ -5,6 +5,7 @@ import app from "../../firebase.init";
 import { motion } from "framer-motion";
 import { useQuery } from '@tanstack/react-query'; 
 import HeroSlider from "../components/HeroSlider"; 
+import { MapPinIcon, CalendarDaysIcon } from "@heroicons/react/24/outline";
 
 const fetchCoreFoodsData = async () => {
   const response = await fetch('https://a11-food-sharing-server-three.vercel.app/api/foods');
@@ -19,13 +20,13 @@ const fetchCoreFoodsData = async () => {
 const FoodItemCard = ({ food, onNavigateToDetails }) => {
   return (
     <motion.div
-      className="card bg-base-100 shadow-xl overflow-hidden flex flex-col h-full" 
+      className="card bg-base-100 shadow-xl overflow-hidden flex flex-col h-full border border-transparent hover:border-primary transition-all duration-300"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
       whileHover={{ scale: 1.03, boxShadow: "0px 10px 20px rgba(0,0,0,0.1)" }}
     >
-      <figure className="relative h-40 flex-shrink-0"> 
+      <figure className="relative h-48 flex-shrink-0">
         <img src={food.foodImage} alt={food.foodName} className="w-full h-full object-cover" />
         {food.isUrgent && (
           <div className="badge badge-error gap-1 absolute top-2 right-2 font-semibold text-white p-2 text-xs">
@@ -33,37 +34,40 @@ const FoodItemCard = ({ food, onNavigateToDetails }) => {
           </div>
         )}
       </figure>
-      <div className="card-body p-3 flex flex-col flex-grow">  
-        <h2 className="card-title text-lg lg:text-xl font-semibold mb-0.5 truncate" title={food.foodName}> 
+      <div className="card-body p-3 flex flex-col flex-grow"> 
+        <h2 className="card-title text-lg font-bold mb-1 truncate" title={food.foodName}> 
           {food.foodName}
         </h2>
         
-        <div className="flex items-center mb-1"> 
+        <div className="flex items-center mb-2"> 
           <div className="avatar mr-2">
-            <div className="w-6 h-6 lg:w-8 lg:h-8 rounded-full ring ring-primary ring-offset-base-100 ring-offset-1">
+            <div className="w-8 h-8 rounded-full ring ring-primary ring-offset-base-100 ring-offset-1">
               <img src={food.donatorImage || 'https://via.placeholder.com/40'} alt={food.donatorName || 'Donor'} />
             </div>
           </div>
-          <span className="text-sm lg:text-base text-gray-600 truncate" title={food.donatorName || 'Anonymous Donor'}> 
+          <span className="text-sm text-gray-600 truncate" title={food.donatorName || 'Anonymous Donor'}>
             {food.donatorName || 'Anonymous Donor'}
           </span>
         </div>
 
-        <div className="text-sm text-gray-500 space-y-0.5 mb-1"> 
-          <p><span className="font-medium">Quantity:</span> {food.foodQuantity}</p>
-          <p className="truncate" title={food.pickupLocation}><span className="font-medium">Pickup:</span> {food.pickupLocation}</p>
-          <p><span className="font-medium">Expires:</span> {food.expiredDate ? new Date(food.expiredDate).toLocaleDateString() : 'N/A'}</p>
+        <div className="space-y-1 text-xs text-gray-500 mb-3">
+          <div className="flex items-center" title={`Location: ${food.pickupLocation}`}>
+            <MapPinIcon className="w-4 h-4 mr-1.5 flex-shrink-0" />
+            <span className="truncate">{food.pickupLocation}</span>
+          </div>
+          <div className="flex items-center" title={`Expires: ${new Date(food.expiredDateTime).toLocaleDateString()}`}>
+            <CalendarDaysIcon className="w-4 h-4 mr-1.5 flex-shrink-0" />
+            <span>Expires: {new Date(food.expiredDateTime).toLocaleDateString()}</span>
+          </div>
         </div>
 
         {food.additionalNotes && (
-          <p className="text-sm text-gray-500 mb-2 flex-grow min-h-[2rem] max-h-8 overflow-hidden" title={food.additionalNotes}> {/* Reduced min-h and max-h */}
-             <span className="font-medium">Notes:</span> {food.additionalNotes.length > 40 ? `${food.additionalNotes.substring(0, 40)}...` : food.additionalNotes} {/* Adjusted substring length */}
+          <p className="text-sm text-gray-500 mb-3 flex-grow" title={food.additionalNotes}> 
+            {food.additionalNotes.length > 60 ? `${food.additionalNotes.substring(0, 60)}...` : food.additionalNotes}
           </p>
         )}
-         {!food.additionalNotes && <div className="flex-grow min-h-[2rem]"></div>} 
 
-
-        <div className="card-actions justify-end mt-auto"> 
+        <div className="card-actions justify-end mt-auto">
           <button
             onClick={() => onNavigateToDetails(food._id)}
             className="btn btn-primary btn-sm" 
@@ -92,7 +96,7 @@ const HomePage = () => {
     }
     
     const sortedByQuantity = [...allAvailableFoods].sort((a, b) => (b.foodQuantity || 0) - (a.foodQuantity || 0));
-    return sortedByQuantity.slice(0, 6);
+    return sortedByQuantity.slice(0, 8); 
   }, [allAvailableFoods]);
 
 
@@ -127,8 +131,8 @@ const HomePage = () => {
           Featured Foods
         </motion.h2>
         {isLoadingFoods && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[...Array(6)].map((_, index) => (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {[...Array(8)].map((_, index) => (
               <div key={index} className="card bg-base-100 shadow-xl animate-pulse">
                 <div className="h-48 bg-gray-300"></div>
                 <div className="card-body p-4">
@@ -152,7 +156,7 @@ const HomePage = () => {
           </div>
         )}
         {!isLoadingFoods && !foodsError && featuredFoods.length > 0 && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {featuredFoods.map(food => (
               <FoodItemCard key={food._id} food={food} onNavigateToDetails={handleViewDetails} />
             ))}
@@ -230,6 +234,35 @@ const HomePage = () => {
             <div className="stat-desc">Growing community</div>
           </div>
         </div>
+      </section>
+
+      
+      <section className="my-12 py-16 bg-sky-100 rounded-lg shadow-inner">
+        <motion.div
+          className="container mx-auto text-center px-4"
+          initial={{ opacity: 0, y: 50 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.7, delay: 0.2 }}
+        >
+          <h2 className="text-3xl font-bold text-sky-800 mb-4">
+            Subscribe to Our Newsletter
+          </h2>
+          <p className="text-gray-600 max-w-2xl mx-auto mb-8">
+            Get the latest updates on new food listings, community stories, and tips on reducing food waste delivered right to your inbox.
+          </p>
+          <form className="flex flex-col sm:flex-row justify-center items-center gap-2 max-w-md mx-auto">
+            <input
+              type="email"
+              placeholder="Enter your email"
+              className="input input-bordered w-full"
+              required
+            />
+            <button type="submit" className="btn btn-primary w-full sm:w-auto">
+              Subscribe
+            </button>
+          </form>
+        </motion.div>
       </section>
     </div>
   );
