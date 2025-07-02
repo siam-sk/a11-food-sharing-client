@@ -28,6 +28,7 @@ SharedSpoon is a full-stack web application designed to connect individuals and 
     *   Users can view a list of their own food requests.
 *   **Responsive Design:** User interface adaptable to various screen sizes using Tailwind CSS and DaisyUI.
 *   **Interactive UI:** Smooth animations and transitions using Framer Motion.
+*   **Dynamic Theming:** Light and dark mode support with a theme toggle to enhance user experience.
 *   **Notifications:** User feedback through toast notifications for actions like login, registration, adding food, etc.
 *   **Private Routes:** Certain pages and functionalities are protected and accessible only to authenticated users.
 
@@ -76,6 +77,18 @@ This project is a MERN-stack application (MongoDB, Express.js, React, Node.js) w
 *   **Middleware & Utilities:**
     *   `cors`: For enabling Cross-Origin Resource Sharing.
     *   `dotenv`: For loading environment variables from a `.env` file.
+
+## API Endpoints
+
+*   `POST /api/auth/generate-token`: Verifies a Firebase ID token and issues a custom JWT for the session.
+*   `GET /api/foods`: Retrieves all available food items for public viewing. Supports searching and sorting.
+*   `GET /api/foods/:id`: Fetches details for a single food item.
+*   `POST /api/foods`: (Protected) Adds a new food item to the database.
+*   `PUT /api/foods/:id`: (Protected) Updates a food item owned by the authenticated user.
+*   `DELETE /api/foods/:id`: (Protected) Deletes a food item owned by the authenticated user.
+*   `GET /api/my-foods`: (Protected) Retrieves all foods added by the currently logged-in user.
+*   `POST /api/food-requests`: (Protected) Allows a user to request a food item, changing its status.
+*   `GET /api/my-food-requests`: (Protected) Retrieves a list of all food items requested by the current user.
 
 ## Getting Started
 
