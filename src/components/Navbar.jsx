@@ -7,7 +7,18 @@ import { toast } from "react-toastify";
 const Navbar = () => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [scrolled, setScrolled] = useState(false);
   const auth = getAuth(app);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 0);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -79,7 +90,7 @@ const Navbar = () => {
 
   if (loading) {
     return (
-      <div className="navbar bg-white shadow-md md:px-12">
+      <div className={`navbar bg-white md:px-12 sticky top-0 z-50 transition-shadow duration-300 ${scrolled ? 'shadow-md' : ''}`}>
         <div className="navbar-start">
           <div className="lg:hidden">
             <div className="btn btn-ghost btn-square animate-pulse bg-gray-200"></div>
@@ -98,7 +109,7 @@ const Navbar = () => {
   }
 
   return (
-    <div className="navbar bg-white shadow-md md:px-12">
+    <div className={`navbar bg-white md:px-12 sticky top-0 z-50 transition-shadow duration-300 ${scrolled ? 'shadow-md' : ''}`}>
       <div className="navbar-start">
         <div className="dropdown">
           <label tabIndex={0} className="btn btn-ghost lg:hidden pr-0 hover:bg-gray-100">
