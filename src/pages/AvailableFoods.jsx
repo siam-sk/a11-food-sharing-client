@@ -4,18 +4,18 @@ import { getAuth, onAuthStateChanged } from "firebase/auth";
 import app from "../../firebase.init";
 import { motion } from "framer-motion";
 import { useQuery } from '@tanstack/react-query';
-import { MagnifyingGlassIcon, ArrowsUpDownIcon, ViewColumnsIcon, TableCellsIcon, CalendarDaysIcon, ExclamationTriangleIcon } from '@heroicons/react/24/outline';
+import { MagnifyingGlassIcon, ArrowsUpDownIcon, ViewColumnsIcon, TableCellsIcon, CalendarDaysIcon, ExclamationTriangleIcon, CubeIcon, MapPinIcon, Squares2X2Icon } from '@heroicons/react/24/outline';
 
 const FoodItemCard = ({ food, onNavigateToDetails }) => {
   return (
     <motion.div
-      className="card bg-base-100 shadow-xl overflow-hidden flex flex-col h-full"
+      className="card bg-base-100 shadow-xl overflow-hidden flex flex-col h-full border border-gray-200 hover:border-primary transition-all duration-300 group"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      whileHover={{ scale: 1.03, boxShadow: "0px 10px 20px rgba(0,0,0,0.1)" }}
+      whileHover={{ scale: 1.02, boxShadow: "0px 10px 20px rgba(0,0,0,0.1)" }}
     >
-      <figure className="relative h-40 flex-shrink-0">
+      <figure className="relative h-48 flex-shrink-0">
         <img src={food.foodImage} alt={food.foodName} className="w-full h-full object-cover" />
         {food.isUrgent && (
           <div className="badge badge-error gap-1 absolute top-2 right-2 font-semibold text-white p-2 text-xs">
@@ -23,34 +23,44 @@ const FoodItemCard = ({ food, onNavigateToDetails }) => {
           </div>
         )}
       </figure>
-      <div className="card-body p-3 flex flex-col flex-grow">
-        <h2 className="card-title text-lg lg:text-xl font-semibold mb-0.5 truncate" title={food.foodName}>
+      <div className="card-body p-4 flex flex-col flex-grow">
+        <h2 className="card-title text-lg font-bold mb-2 truncate" title={food.foodName}>
           {food.foodName}
         </h2>
         
-        <div className="flex items-center mb-1">
+        <div className="flex items-center mb-3">
           <div className="avatar mr-2">
-            <div className="w-6 h-6 lg:w-8 lg:h-8 rounded-full ring ring-primary ring-offset-base-100 ring-offset-1">
+            <div className="w-8 h-8 rounded-full ring ring-primary ring-offset-base-100 ring-offset-1">
               <img src={food.donatorImage || 'https://via.placeholder.com/40'} alt={food.donatorName || 'Donor'} />
             </div>
           </div>
-          <span className="text-sm lg:text-base text-gray-600 truncate" title={food.donatorName || 'Anonymous Donor'}>
+          <span className="text-sm text-gray-600 truncate" title={food.donatorName || 'Anonymous Donor'}>
             {food.donatorName || 'Anonymous Donor'}
           </span>
         </div>
 
-        <div className="text-sm text-gray-500 space-y-0.5 mb-1">
-          <p><span className="font-medium">Quantity:</span> {food.foodQuantity}</p>
-          <p className="truncate" title={food.pickupLocation}><span className="font-medium">Pickup:</span> {food.pickupLocation}</p>
-          <p><span className="font-medium">Expires:</span> {food.expiredDate ? new Date(food.expiredDate).toLocaleDateString() : 'N/A'}</p>
+        {/* Stats with Icons */}
+        <div className="space-y-2 text-sm text-gray-600 mb-4">
+          <div className="flex items-center" title={`Quantity: ${food.foodQuantity}`}>
+            <CubeIcon className="w-4 h-4 mr-2 flex-shrink-0 text-gray-400" />
+            <span>Serves: <strong>{food.foodQuantity}</strong></span>
+          </div>
+          <div className="flex items-center" title={`Location: ${food.pickupLocation}`}>
+            <MapPinIcon className="w-4 h-4 mr-2 flex-shrink-0 text-gray-400" />
+            <span className="truncate">{food.pickupLocation}</span>
+          </div>
+          <div className="flex items-center" title={`Expires: ${new Date(food.expiredDate).toLocaleDateString()}`}>
+            <CalendarDaysIcon className="w-4 h-4 mr-2 flex-shrink-0 text-gray-400" />
+            <span>Expires: <strong>{food.expiredDate ? new Date(food.expiredDate).toLocaleDateString() : 'N/A'}</strong></span>
+          </div>
         </div>
 
         {food.additionalNotes && (
-          <p className="text-sm text-gray-500 mb-2 flex-grow min-h-[2rem] max-h-8 overflow-hidden" title={food.additionalNotes}>
-             <span className="font-medium">Notes:</span> {food.additionalNotes.length > 40 ? `${food.additionalNotes.substring(0, 40)}...` : food.additionalNotes}
+          <p className="text-sm text-gray-500 mb-4 flex-grow min-h-[2.5rem]" title={food.additionalNotes}>
+             {food.additionalNotes.length > 60 ? `${food.additionalNotes.substring(0, 60)}...` : food.additionalNotes}
           </p>
         )}
-         {!food.additionalNotes && <div className="flex-grow min-h-[2rem]"></div>}
+         {!food.additionalNotes && <div className="flex-grow min-h-[2.5rem]"></div>}
 
         <div className="card-actions justify-end mt-auto">
           <button
@@ -77,7 +87,7 @@ const fetchAvailableFoods = async () => {
 const AvailableFoods = () => {
   const [sortOrder, setSortOrder] = useState("default");
   const [searchTerm, setSearchTerm] = useState("");
-  const [isThreeColumnLayout, setIsThreeColumnLayout] = useState(true);
+  const [columnLayout, setColumnLayout] = useState(3);
 
   const [user, setUser] = useState(null);
   const auth = getAuth(app);
@@ -127,7 +137,11 @@ const AvailableFoods = () => {
   };
 
   const toggleLayout = () => {
-    setIsThreeColumnLayout(prev => !prev);
+    setColumnLayout(prev => {
+      if (prev === 2) return 3;
+      if (prev === 3) return 4;
+      return 2; // Cycle from 4 back to 2
+    });
   };
 
   const handleViewDetails = (foodId) => {
@@ -211,17 +225,19 @@ const AvailableFoods = () => {
             <button
                 onClick={toggleLayout}
                 className="btn btn-sm btn-outline btn-neutral hover:btn-accent"
-                title={isThreeColumnLayout ? "Switch to 2 Columns" : "Switch to 3 Columns"}
+                title={`Switch to ${columnLayout === 2 ? 3 : columnLayout === 3 ? 4 : 2} Columns`}
             >
-                {isThreeColumnLayout ? <TableCellsIcon className="h-5 w-5" /> : <ViewColumnsIcon className="h-5 w-5" />}
-                <span className="ml-2 hidden sm:inline">{isThreeColumnLayout ? "3 Cols" : "2 Cols"}</span>
+                {columnLayout === 2 && <ViewColumnsIcon className="h-5 w-5" />}
+                {columnLayout === 3 && <TableCellsIcon className="h-5 w-5" />}
+                {columnLayout === 4 && <Squares2X2Icon className="h-5 w-5" />}
+                <span className="ml-2 hidden sm:inline">{columnLayout} Cols</span>
             </button>
           </div>
         </div>
       </div>
 
       {displayedFoods.length > 0 ? (
-        <div className={`grid gap-6 ${isThreeColumnLayout ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3' : 'grid-cols-1 md:grid-cols-2'}`}>
+        <div className={`grid gap-6 grid-cols-1 md:grid-cols-2 ${columnLayout === 3 ? 'lg:grid-cols-3' : ''} ${columnLayout === 4 ? 'lg:grid-cols-4' : ''}`}>
           {displayedFoods.map(food => (
             <FoodItemCard key={food._id} food={food} onNavigateToDetails={handleViewDetails} />
           ))}
