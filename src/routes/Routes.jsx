@@ -11,6 +11,9 @@ import ManageMyFoods from "../pages/ManageMyFoods";
 import MyFoodRequests from "../pages/MyFoodRequests";
 import NotFound from "../pages/NotFound";
 import TitleRoute from "../components/TitleRoute";
+import About from "../pages/About";
+import Contact from "../pages/Contact";
+import PublicOnlyRoute from "../components/PublicOnlyRoute";
 
 const router = createBrowserRouter([
   {
@@ -86,6 +89,26 @@ const router = createBrowserRouter([
           <TitleRoute title="Food Details">
             <SingleFoodDetailsPage />
           </TitleRoute>
+        ),
+      },
+      {
+        path: "about",
+        element: (
+          <PublicOnlyRoute>
+            <TitleRoute title="About">
+              <About />
+            </TitleRoute>
+          </PublicOnlyRoute>
+        ),
+      },
+      {
+        path: "contact",
+        element: (
+          <PublicOnlyRoute>
+            <TitleRoute title="Contact">
+              <Contact />
+            </TitleRoute>
+          </PublicOnlyRoute>
         ),
       },
       {

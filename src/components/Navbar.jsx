@@ -37,6 +37,16 @@ const Navbar = () => {
       <li>
         <Link to="/available-foods" className="text-gray-700 hover:text-blue-600">Available Foods</Link>
       </li>
+      {!loading && !user && (
+        <>
+          <li>
+            <Link to="/about" className="text-gray-700 hover:text-blue-600">About</Link>
+          </li>
+          <li>
+            <Link to="/contact" className="text-gray-700 hover:text-blue-600">Contact</Link>
+          </li>
+        </>
+      )}
       {!loading && user && (
         <>
           <li>
