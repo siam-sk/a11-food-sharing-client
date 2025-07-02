@@ -10,6 +10,7 @@ import SingleFoodDetailsPage from "../pages/SingleFoodDetailsPage";
 import ManageMyFoods from "../pages/ManageMyFoods";
 import MyFoodRequests from "../pages/MyFoodRequests";
 import NotFound from "../pages/NotFound";
+import TitleRoute from "../components/TitleRoute";
 
 const router = createBrowserRouter([
   {
@@ -19,17 +20,27 @@ const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <HomePage />,
+        element: (
+          <TitleRoute title="Home">
+            <HomePage />
+          </TitleRoute>
+        ),
       },
       {
         path: "available-foods",
-        element: <AvailableFoods />,
+        element: (
+          <TitleRoute title="Available Foods">
+            <AvailableFoods />
+          </TitleRoute>
+        ),
       },
       {
         path: "add-food",
         element: (
           <PrivateRoute>
-            <AddFood />
+            <TitleRoute title="Add Food">
+              <AddFood />
+            </TitleRoute>
           </PrivateRoute>
         ),
       },
@@ -37,7 +48,9 @@ const router = createBrowserRouter([
         path: "manage-my-foods",
         element: (
           <PrivateRoute>
-            <ManageMyFoods />
+            <TitleRoute title="Manage My Foods">
+              <ManageMyFoods />
+            </TitleRoute>
           </PrivateRoute>
         ),
       },
@@ -45,25 +58,43 @@ const router = createBrowserRouter([
         path: "my-food-requests",
         element: (
           <PrivateRoute>
-            <MyFoodRequests /> 
+            <TitleRoute title="My Food Requests">
+              <MyFoodRequests />
+            </TitleRoute>
           </PrivateRoute>
         ),
       },
       {
         path: "login",
-        element: <Login />,
+        element: (
+          <TitleRoute title="Login">
+            <Login />
+          </TitleRoute>
+        ),
       },
       {
         path: "signup",
-        element: <Register />,
+        element: (
+          <TitleRoute title="Register">
+            <Register />
+          </TitleRoute>
+        ),
       },
       {
         path: "food/:foodId",
-        element: <SingleFoodDetailsPage />,
+        element: (
+          <TitleRoute title="Food Details">
+            <SingleFoodDetailsPage />
+          </TitleRoute>
+        ),
       },
       {
         path: "*",
-        element: <NotFound />,
+        element: (
+          <TitleRoute title="404 Not Found">
+            <NotFound />
+          </TitleRoute>
+        ),
       },
     ],
   },
