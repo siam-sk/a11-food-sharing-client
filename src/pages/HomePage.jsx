@@ -4,7 +4,7 @@ import { getAuth, onAuthStateChanged } from "firebase/auth";
 import app from "../../firebase.init";
 import { motion } from "framer-motion";
 import { useQuery } from '@tanstack/react-query'; 
-
+import HeroSlider from "../components/HeroSlider"; 
 
 const fetchCoreFoodsData = async () => {
   const response = await fetch('https://a11-food-sharing-server-three.vercel.app/api/foods');
@@ -113,37 +113,8 @@ const HomePage = () => {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      {/* Hero Section */}
-      <motion.section
-        className="hero min-h-[60vh] bg-cover bg-center rounded-lg shadow-lg my-8"
-        style={{ backgroundImage: "url('/banner.webp')" }}
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 1 }}
-      >
-        <div className="hero-overlay bg-opacity-60 rounded-lg"></div>
-        <div className="hero-content text-center text-neutral-content">
-          <div className="max-w-md">
-            <motion.h1 
-              className="mb-5 text-5xl font-bold"
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-            >
-              Welcome to SharedSpoon
-            </motion.h1>
-            <motion.p 
-              className="mb-5"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.4 }}
-            >
-              Connecting communities, reducing food waste, and sharing abundance. Find or offer food with ease.
-            </motion.p>
-            <Link to="/available-foods" className="btn btn-primary">Get Started</Link>
-          </div>
-        </div>
-      </motion.section>
+      
+      <HeroSlider />
 
       
       <section className="my-12">
