@@ -6,9 +6,9 @@ import "react-toastify/dist/ReactToastify.css";
 
 const RootLayout = () => {
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen bg-base-200">
       <Navbar />
-      <main className="flex-grow bg-gradient-to-br from-slate-50 to-sky-50"> 
+      <main className="flex-grow"> 
         <Outlet />
       </main>
       <Footer />

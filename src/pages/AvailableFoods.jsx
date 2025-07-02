@@ -9,7 +9,7 @@ import { MagnifyingGlassIcon, ArrowsUpDownIcon, ViewColumnsIcon, TableCellsIcon,
 const FoodItemCard = ({ food, onNavigateToDetails }) => {
   return (
     <motion.div
-      className="card bg-base-100 shadow-xl overflow-hidden flex flex-col h-full border border-gray-200 hover:border-primary transition-all duration-300 group"
+      className="card bg-base-100 shadow-xl overflow-hidden flex flex-col h-full border border-base-300 hover:border-primary transition-all duration-300 group"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
@@ -34,29 +34,29 @@ const FoodItemCard = ({ food, onNavigateToDetails }) => {
               <img src={food.donatorImage || 'https://via.placeholder.com/40'} alt={food.donatorName || 'Donor'} />
             </div>
           </div>
-          <span className="text-sm text-gray-600 truncate" title={food.donatorName || 'Anonymous Donor'}>
+          <span className="text-sm text-base-content/80 truncate" title={food.donatorName || 'Anonymous Donor'}>
             {food.donatorName || 'Anonymous Donor'}
           </span>
         </div>
 
-        {/* Stats with Icons */}
-        <div className="space-y-2 text-sm text-gray-600 mb-4">
+        
+        <div className="space-y-2 text-sm text-base-content mb-4">
           <div className="flex items-center" title={`Quantity: ${food.foodQuantity}`}>
-            <CubeIcon className="w-4 h-4 mr-2 flex-shrink-0 text-gray-400" />
+            <CubeIcon className="w-4 h-4 mr-2 flex-shrink-0 text-base-content/60" />
             <span>Serves: <strong>{food.foodQuantity}</strong></span>
           </div>
           <div className="flex items-center" title={`Location: ${food.pickupLocation}`}>
-            <MapPinIcon className="w-4 h-4 mr-2 flex-shrink-0 text-gray-400" />
+            <MapPinIcon className="w-4 h-4 mr-2 flex-shrink-0 text-base-content/60" />
             <span className="truncate">{food.pickupLocation}</span>
           </div>
           <div className="flex items-center" title={`Expires: ${new Date(food.expiredDate).toLocaleDateString()}`}>
-            <CalendarDaysIcon className="w-4 h-4 mr-2 flex-shrink-0 text-gray-400" />
+            <CalendarDaysIcon className="w-4 h-4 mr-2 flex-shrink-0 text-base-content/60" />
             <span>Expires: <strong>{food.expiredDate ? new Date(food.expiredDate).toLocaleDateString() : 'N/A'}</strong></span>
           </div>
         </div>
 
         {food.additionalNotes && (
-          <p className="text-sm text-gray-500 mb-4 flex-grow min-h-[2.5rem]" title={food.additionalNotes}>
+          <p className="text-sm text-base-content/70 mb-4 flex-grow min-h-[2.5rem]" title={food.additionalNotes}>
              {food.additionalNotes.length > 60 ? `${food.additionalNotes.substring(0, 60)}...` : food.additionalNotes}
           </p>
         )}
@@ -140,7 +140,7 @@ const AvailableFoods = () => {
     setColumnLayout(prev => {
       if (prev === 2) return 3;
       if (prev === 3) return 4;
-      return 2; // Cycle from 4 back to 2
+      return 2; 
     });
   };
 
@@ -164,9 +164,9 @@ const AvailableFoods = () => {
   if (error) {
     return (
       <div className="flex flex-col justify-center items-center min-h-[calc(100vh-200px)] py-10 px-4 text-center">
-        <ExclamationTriangleIcon className="h-12 w-12 text-red-500 mb-4" />
-        <p className="text-xl text-red-600">Error fetching foods: {error.message}</p>
-        <p className="text-gray-600 mt-2">Please try again later.</p>
+        <ExclamationTriangleIcon className="h-12 w-12 text-error mb-4" />
+        <p className="text-xl text-error-content">Error fetching foods: {error.message}</p>
+        <p className="text-base-content/80 mt-2">Please try again later.</p>
       </div>
     );
   }
@@ -174,24 +174,24 @@ const AvailableFoods = () => {
   return (
     <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="text-center mb-10">
-        <CalendarDaysIcon className="mx-auto h-16 w-auto text-sky-600" />
-        <h1 className="mt-4 text-4xl font-extrabold text-gray-900 sm:text-5xl">
+        <CalendarDaysIcon className="mx-auto h-16 w-auto text-primary" />
+        <h1 className="mt-4 text-4xl font-extrabold text-base-content sm:text-5xl">
           Available Foods
         </h1>
-        <p className="mt-3 text-lg text-gray-600">
+        <p className="mt-3 text-lg text-base-content/80">
           Browse food items shared by our community.
         </p>
       </div>
 
-      <div className="mb-8 p-4 sm:p-6 bg-white shadow-xl rounded-lg">
+      <div className="mb-8 p-4 sm:p-6 bg-base-100 shadow-xl rounded-lg">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
           <div className="md:col-span-1">
-            <label htmlFor="searchFood" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="searchFood" className="block text-sm font-medium text-base-content mb-1">
               Search by Food Name
             </label>
             <div className="relative rounded-md shadow-sm">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <MagnifyingGlassIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
+                <MagnifyingGlassIcon className="h-5 w-5 text-base-content/40" aria-hidden="true" />
               </div>
               <input
                 type="text"
@@ -206,17 +206,17 @@ const AvailableFoods = () => {
 
           <div className="md:col-span-2 flex flex-col sm:flex-row sm:items-end sm:justify-end gap-2">
             <div className="flex items-center gap-2 flex-wrap">
-              <span className="text-sm font-medium text-gray-700 self-center">Sort by Expire Date:</span>
+              <span className="text-sm font-medium text-base-content self-center">Sort by Expire Date:</span>
               <button
                 onClick={() => handleSortChange('asc')}
-                className={`btn btn-sm ${sortOrder === 'asc' ? 'btn-primary text-white' : 'btn-outline btn-neutral hover:btn-primary'}`}
+                className={`btn btn-sm ${sortOrder === 'asc' ? 'btn-primary' : 'btn-outline'}`}
                 title="Sort by nearest expiry date"
               >
                 <ArrowsUpDownIcon className="h-4 w-4 mr-1 inline-block transform rotate-180" /> Nearest
               </button>
               <button
                 onClick={() => handleSortChange('desc')}
-                className={`btn btn-sm ${sortOrder === 'desc' ? 'btn-primary text-white' : 'btn-outline btn-neutral hover:btn-primary'}`}
+                className={`btn btn-sm ${sortOrder === 'desc' ? 'btn-primary' : 'btn-outline'}`}
                 title="Sort by furthest expiry date"
               >
                 <ArrowsUpDownIcon className="h-4 w-4 mr-1 inline-block" /> Furthest
@@ -224,7 +224,7 @@ const AvailableFoods = () => {
             </div>
             <button
                 onClick={toggleLayout}
-                className="btn btn-sm btn-outline btn-neutral hover:btn-accent"
+                className="btn btn-sm btn-outline"
                 title={`Switch to ${columnLayout === 2 ? 3 : columnLayout === 3 ? 4 : 2} Columns`}
             >
                 {columnLayout === 2 && <ViewColumnsIcon className="h-5 w-5" />}
@@ -244,8 +244,8 @@ const AvailableFoods = () => {
         </div>
       ) : (
         <div className="text-center py-10">
-          <MagnifyingGlassIcon className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-          <p className="text-xl text-gray-600">
+          <MagnifyingGlassIcon className="mx-auto h-12 w-12 text-base-content/40 mb-4" />
+          <p className="text-xl text-base-content/80">
             {searchTerm ? "No food items match your search." : "No food items currently available."}
           </p>
           {searchTerm && (

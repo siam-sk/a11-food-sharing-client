@@ -3,7 +3,7 @@ import { EnvelopeIcon, MapPinIcon, PhoneIcon } from "@heroicons/react/24/outline
 import { motion } from "framer-motion";
 
 const Contact = () => (
-  <div className="bg-gradient-to-br from-sky-50 via-white to-blue-100 py-16 px-4 sm:px-6 lg:px-8">
+  <div className="bg-base-200 py-16 px-4 sm:px-6 lg:px-8">
     <div className="container mx-auto">
       
       <motion.div
@@ -12,80 +12,80 @@ const Contact = () => (
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        <EnvelopeIcon className="h-20 w-20 mx-auto mb-4 text-sky-500" />
-        <h1 className="text-4xl md:text-5xl font-extrabold text-sky-800 drop-shadow">
-          Get In <span className="text-blue-600">Touch</span>
+        <EnvelopeIcon className="h-20 w-20 mx-auto mb-4 text-primary" />
+        <h1 className="text-4xl md:text-5xl font-extrabold text-base-content drop-shadow">
+          Get In <span className="text-primary">Touch</span>
         </h1>
-        <p className="mt-4 text-lg md:text-xl text-gray-600 max-w-3xl mx-auto">
-          We&apos;re here to help and answer any question you might have. We look forward to hearing from you!
+        <p className="mt-4 text-lg text-base-content/80 max-w-2xl mx-auto">
+          Have questions or want to get involved? We'd love to hear from you!
         </p>
       </motion.div>
 
       
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-10 mb-20">
+      <div className="grid md:grid-cols-3 gap-8 mb-16">
         <motion.div
-          className="text-center p-8 bg-white rounded-xl shadow-lg"
+          className="text-center p-8 bg-base-100 rounded-xl shadow-lg"
           whileHover={{ y: -5 }}
         >
-          <EnvelopeIcon className="h-12 w-12 text-sky-500 mx-auto mb-4" />
-          <h3 className="font-bold text-xl text-gray-800 mb-2">Email Us</h3>
-          <p className="text-gray-600 mb-3">Our team is here to help with any questions.</p>
-          <a href="mailto:support@sharedspoon.com" className="font-semibold text-sky-600 hover:underline">
-            support@sharedspoon.com
-          </a>
-        </motion.div>
-        <motion.div
-          className="text-center p-8 bg-white rounded-xl shadow-lg"
-          whileHover={{ y: -5 }}
-        >
-          <MapPinIcon className="h-12 w-12 text-pink-500 mx-auto mb-4" />
-          <h3 className="font-bold text-xl text-gray-800 mb-2">Our Location</h3>
-          <p className="text-gray-600 mb-3">123 Community Lane, Food City, FS 12345</p>
-          <a href="#" className="font-semibold text-sky-600 hover:underline">
+          <MapPinIcon className="h-12 w-12 text-secondary mx-auto mb-4" />
+          <h3 className="font-bold text-xl text-base-content mb-2">Our Location</h3>
+          <p className="text-base-content/80 mb-3">123 Community Lane, Food City, FS 12345</p>
+          <a href="#" className="font-semibold text-primary hover:underline">
             View on Map
           </a>
         </motion.div>
         <motion.div
-          className="text-center p-8 bg-white rounded-xl shadow-lg"
+          className="text-center p-8 bg-base-100 rounded-xl shadow-lg"
           whileHover={{ y: -5 }}
         >
-          <PhoneIcon className="h-12 w-12 text-green-500 mx-auto mb-4" />
-          <h3 className="font-bold text-xl text-gray-800 mb-2">Call Us</h3>
-          <p className="text-gray-600 mb-3">Mon-Fri from 8am to 5pm.</p>
-          <a href="tel:+123456789" className="font-semibold text-sky-600 hover:underline">
-            +1 (23) 456-7890
+          <PhoneIcon className="h-12 w-12 text-accent mx-auto mb-4" />
+          <h3 className="font-bold text-xl text-base-content mb-2">Call Us</h3>
+          <p className="text-base-content/80 mb-3">(123) 456-7890</p>
+          <a href="tel:1234567890" className="font-semibold text-primary hover:underline">
+            Give us a call
+          </a>
+        </motion.div>
+        <motion.div
+          className="text-center p-8 bg-base-100 rounded-xl shadow-lg"
+          whileHover={{ y: -5 }}
+        >
+          <EnvelopeIcon className="h-12 w-12 text-primary mx-auto mb-4" />
+          <h3 className="font-bold text-xl text-base-content mb-2">Email Us</h3>
+          <p className="text-base-content/80 mb-3">contact@sharedspoon.com</p>
+          <a href="mailto:contact@sharedspoon.com" className="font-semibold text-primary hover:underline">
+            Send an email
           </a>
         </motion.div>
       </div>
 
-      
-      <div className="grid md:grid-cols-2 gap-12 items-start bg-white p-8 rounded-2xl shadow-xl mb-20">
+      <div className="grid md:grid-cols-2 gap-12 items-center">
         <motion.div
+          className="bg-base-100 p-8 rounded-xl shadow-lg"
           initial={{ opacity: 0, x: -50 }}
           whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.7 }}
         >
-          <h2 className="text-3xl font-bold text-gray-800 mb-6">Send a Message</h2>
-          <form className="flex flex-col gap-4">
+          <h2 className="text-2xl font-bold text-base-content mb-6">Send a Direct Message</h2>
+          <form className="space-y-4">
             <input
               type="text"
               placeholder="Your Name"
-              className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-sky-300 outline-none transition"
+              className="input input-bordered w-full"
             />
             <input
               type="email"
               placeholder="Your Email"
-              className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-sky-300 outline-none transition"
+              className="input input-bordered w-full"
             />
             <textarea
               placeholder="Your Message"
               rows={4}
-              className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-sky-300 outline-none transition resize-none"
+              className="textarea textarea-bordered w-full resize-none"
             />
             <button
               type="submit"
-              className="mt-2 px-6 py-3 rounded-lg bg-sky-600 text-white font-semibold shadow hover:bg-sky-700 transition"
+              className="btn btn-primary w-full"
             >
               Send Message
             </button>

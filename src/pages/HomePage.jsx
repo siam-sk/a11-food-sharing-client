@@ -45,12 +45,12 @@ const FoodItemCard = ({ food, onNavigateToDetails }) => {
               <img src={food.donatorImage || 'https://via.placeholder.com/40'} alt={food.donatorName || 'Donor'} />
             </div>
           </div>
-          <span className="text-sm text-gray-600 truncate" title={food.donatorName || 'Anonymous Donor'}>
+          <span className="text-sm text-base-content/80 truncate" title={food.donatorName || 'Anonymous Donor'}>
             {food.donatorName || 'Anonymous Donor'}
           </span>
         </div>
 
-        <div className="space-y-1 text-xs text-gray-500 mb-3">
+        <div className="space-y-1 text-xs text-base-content/70 mb-3">
           <div className="flex items-center" title={`Location: ${food.pickupLocation}`}>
             <MapPinIcon className="w-4 h-4 mr-1.5 flex-shrink-0" />
             <span className="truncate">{food.pickupLocation}</span>
@@ -62,7 +62,7 @@ const FoodItemCard = ({ food, onNavigateToDetails }) => {
         </div>
 
         {food.additionalNotes && (
-          <p className="text-sm text-gray-500 mb-3 flex-grow" title={food.additionalNotes}> 
+          <p className="text-sm text-base-content/70 mb-3 flex-grow" title={food.additionalNotes}> 
             {food.additionalNotes.length > 60 ? `${food.additionalNotes.substring(0, 60)}...` : food.additionalNotes}
           </p>
         )}
@@ -134,24 +134,24 @@ const HomePage = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {[...Array(8)].map((_, index) => (
               <div key={index} className="card bg-base-100 shadow-xl animate-pulse">
-                <div className="h-48 bg-gray-300"></div>
+                <div className="h-48 bg-base-300"></div>
                 <div className="card-body p-4">
-                  <div className="h-6 bg-gray-300 rounded w-3/4 mb-2"></div>
+                  <div className="h-6 bg-base-300 rounded w-3/4 mb-2"></div>
                   <div className="flex items-center mb-2">
-                    <div className="w-8 h-8 bg-gray-300 rounded-full mr-2"></div>
-                    <div className="h-4 bg-gray-300 rounded w-1/2"></div>
+                    <div className="w-8 h-8 bg-base-300 rounded-full mr-2"></div>
+                    <div className="h-4 bg-base-300 rounded w-1/2"></div>
                   </div>
-                  <div className="h-3 bg-gray-300 rounded w-full mb-1"></div>
-                  <div className="h-3 bg-gray-300 rounded w-5/6 mb-1"></div>
-                  <div className="h-3 bg-gray-300 rounded w-4/6 mb-3"></div>
-                  <div className="h-8 bg-gray-300 rounded w-1/3 ml-auto"></div>
+                  <div className="h-3 bg-base-300 rounded w-full mb-1"></div>
+                  <div className="h-3 bg-base-300 rounded w-5/6 mb-1"></div>
+                  <div className="h-3 bg-base-300 rounded w-4/6 mb-3"></div>
+                  <div className="h-8 bg-base-300 rounded w-1/3 ml-auto"></div>
                 </div>
               </div>
             ))}
           </div>
         )}
         {foodsError && (
-          <div className="text-center text-red-500 py-10">
+          <div className="text-center text-error py-10">
             <p>Could not load featured foods: {foodsError.message}</p>
           </div>
         )}
@@ -163,7 +163,7 @@ const HomePage = () => {
           </div>
         )}
         {!isLoadingFoods && !foodsError && featuredFoods.length === 0 && (
-           <p className="text-center text-xl text-gray-500 mt-10">No featured foods available at the moment.</p>
+           <p className="text-center text-xl text-base-content/70 mt-10">No featured foods available at the moment.</p>
         )}
         <div className="text-center mt-8">
           <Link to="/available-foods" className="btn btn-secondary">
@@ -173,7 +173,7 @@ const HomePage = () => {
       </section>
 
       
-      <section className="my-12 p-8 bg-base-200 rounded-lg shadow">
+      <section className="my-12 p-8 bg-base-100 rounded-lg shadow">
         <motion.h2
           className="text-3xl font-bold text-center mb-8"
           initial={{ scale: 0.5, opacity: 0 }}
@@ -237,7 +237,7 @@ const HomePage = () => {
       </section>
 
       
-      <section className="my-12 py-16 bg-sky-100 rounded-lg shadow-inner">
+      <section className="my-12 py-16 bg-base-100 rounded-lg shadow-inner">
         <motion.div
           className="container mx-auto text-center px-4"
           initial={{ opacity: 0, y: 50 }}
@@ -245,10 +245,10 @@ const HomePage = () => {
           viewport={{ once: true }}
           transition={{ duration: 0.7, delay: 0.2 }}
         >
-          <h2 className="text-3xl font-bold text-sky-800 mb-4">
+          <h2 className="text-3xl font-bold text-primary-focus mb-4">
             Subscribe to Our Newsletter
           </h2>
-          <p className="text-gray-600 max-w-2xl mx-auto mb-8">
+          <p className="text-base-content/80 max-w-2xl mx-auto mb-8">
             Get the latest updates on new food listings, community stories, and tips on reducing food waste delivered right to your inbox.
           </p>
           <form className="flex flex-col sm:flex-row justify-center items-center gap-2 max-w-md mx-auto">
