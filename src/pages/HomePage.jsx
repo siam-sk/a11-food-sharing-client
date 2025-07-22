@@ -182,18 +182,21 @@ const HomePage = () => {
         >
           How It Works
         </motion.h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.6, duration: 0.5 }}>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.6, duration: 0.5 }} className="flex flex-col items-center">
+            <div className="bg-primary/10 p-4 rounded-full mb-3"><svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg></div>
             <h3 className="text-xl font-semibold mb-2">1. Donate Food</h3>
-            <p>Have surplus food? List it easily on our platform with details like quantity and pickup location.</p>
+            <p className="text-base-content/80">Have surplus food? List it easily on our platform with details like quantity and pickup location.</p>
           </motion.div>
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.8, duration: 0.5 }}>
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.8, duration: 0.5 }} className="flex flex-col items-center">
+            <div className="bg-secondary/10 p-4 rounded-full mb-3"><svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-secondary" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg></div>
             <h3 className="text-xl font-semibold mb-2">2. Find Food</h3>
-            <p>Browse available food items shared by others in your community. Filter by location or type.</p>
+            <p className="text-base-content/80">Browse available food items shared by others in your community. Filter by location or type.</p>
           </motion.div>
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.0, duration: 0.5 }}>
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.0, duration: 0.5 }} className="flex flex-col items-center">
+            <div className="bg-accent/10 p-4 rounded-full mb-3"><svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.085a2 2 0 00-1.736.97l-1.9 3.8z" /></svg></div>
             <h3 className="text-xl font-semibold mb-2">3. Connect & Share</h3>
-            <p>Request food items you need, or coordinate pickup for donations. Reduce waste together!</p>
+            <p className="text-base-content/80">Request food items you need, or coordinate pickup for donations. Reduce waste together!</p>
           </motion.div>
         </div>
       </section>
