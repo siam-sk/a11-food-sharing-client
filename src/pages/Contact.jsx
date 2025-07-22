@@ -24,8 +24,8 @@ const Contact = () => (
       
       <div className="grid md:grid-cols-3 gap-8 mb-16">
         <motion.div
-          className="text-center p-8 bg-base-100 rounded-xl shadow-lg"
-          whileHover={{ y: -5 }}
+          className="text-center p-8 bg-base-100 rounded-xl shadow-lg transition-transform duration-300"
+          whileHover={{ y: -5, scale: 1.02 }}
         >
           <MapPinIcon className="h-12 w-12 text-secondary mx-auto mb-4" />
           <h3 className="font-bold text-xl text-base-content mb-2">Our Location</h3>
