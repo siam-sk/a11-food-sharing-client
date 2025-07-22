@@ -163,7 +163,10 @@ const HomePage = () => {
           </div>
         )}
         {!isLoadingFoods && !foodsError && featuredFoods.length === 0 && (
-           <p className="text-center text-xl text-base-content/70 mt-10">No featured foods available at the moment.</p>
+           <div className="text-center py-10">
+             <p className="text-center text-xl text-base-content/70 mt-10">No featured foods available at the moment.</p>
+             <Link to="/add-food" className="btn btn-primary mt-4">Be the first to donate!</Link>
+           </div>
         )}
         <div className="text-center mt-8">
           <Link to="/available-foods" className="btn btn-secondary">
