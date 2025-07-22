@@ -16,7 +16,7 @@ createRoot(document.getElementById('root')).render(
     <QueryClientProvider client={queryClient}> 
       <ThemeProvider> 
         <RouterProvider router={router} />
-        <ToastContainer position="top-right" autoClose={3000} hideProgressBar={false} />
+        <ToastContainer position="top-right" autoClose={3000} hideProgressBar={false} theme="colored" />
       </ThemeProvider>
       <ReactQueryDevtools initialIsOpen={false} /> 
     </QueryClientProvider>
