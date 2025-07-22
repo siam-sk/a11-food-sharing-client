@@ -152,16 +152,13 @@ const AddFood = () => {
   const today = new Date().toISOString().split('T')[0];
 
   return (
-    <div className="py-8 px-4 sm:px-6 lg:px-8"> 
-      <div className="max-w-3xl mx-auto">
-        <div className="text-center mb-10">
-            <ClipboardDocumentListIcon className="mx-auto h-16 w-auto text-sky-600" />
-            <h1 className="mt-4 text-4xl font-extrabold text-gray-900 sm:text-5xl">
-            Share Your Food
-            </h1>
-            <p className="mt-3 text-lg text-gray-600">
-            Fill in the details below to add a new food item to the platform.
-            </p>
+    <div className="bg-base-200 min-h-[calc(100vh-120px)] py-12 px-4 sm:px-6 lg:px-8">
+      <div className="container mx-auto max-w-4xl">
+        <div className="text-center mb-8">
+          <h1 className="text-4xl font-bold text-base-content">Add a New Food Item</h1>
+          <p className="mt-2 text-lg text-base-content">
+            Help others by sharing your surplus food. Please provide the details below.
+          </p>
         </div>
 
         {user && (
