@@ -34,12 +34,12 @@ const FoodItemCard = ({ food, onNavigateToDetails }) => {
           </div>
         )}
       </figure>
-      <div className="card-body p-3 flex flex-col flex-grow"> 
-        <h2 className="card-title text-lg font-bold mb-1 truncate" title={food.foodName}> 
+      <div className="card-body p-4 flex flex-col flex-grow"> 
+        <h2 className="card-title text-lg font-bold mb-2 truncate" title={food.foodName}> 
           {food.foodName}
         </h2>
         
-        <div className="flex items-center mb-2"> 
+        <div className="flex items-center mb-3"> 
           <div className="avatar mr-2">
             <div className="w-8 h-8 rounded-full ring ring-primary ring-offset-base-100 ring-offset-1">
               <img src={food.donatorImage || 'https://via.placeholder.com/40'} alt={food.donatorName || 'Donor'} />
