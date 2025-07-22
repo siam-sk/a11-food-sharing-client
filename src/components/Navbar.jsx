@@ -154,7 +154,12 @@ const Navbar = () => {
                   />
                 </div>
               </label>
-              
+              <ul tabIndex={0} className="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52 border border-base-300">
+                <li className="p-2 font-semibold border-b border-base-300">{user.displayName || 'User'}</li>
+                <li><Link to="/manage-my-foods">Manage My Foods</Link></li>
+                <li><Link to="/my-food-requests">My Food Requests</Link></li>
+                <li><Link to="/add-food">Add Food</Link></li>
+              </ul>
             </div>
             <button onClick={handleLogout} className={`${errorButtonClass} ml-2`}>
               Logout
