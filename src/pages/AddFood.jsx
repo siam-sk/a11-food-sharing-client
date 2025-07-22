@@ -191,8 +191,8 @@ const AddFood = () => {
                   <CubeIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
                 </div>
                 <input type="text" id="foodName" value={foodName} onChange={(e) => setFoodName(e.target.value)} required 
-                       className="appearance-none block w-full px-3 py-2 pl-10 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-sky-500 focus:border-sky-500 sm:text-sm"
-                       placeholder="e.g., Homemade Lasagna, Fresh Apples" />
+                       className="input input-bordered w-full pl-10 focus:ring-primary focus:border-primary"
+                       placeholder="e.g., Fresh Apples" />
               </div>
             </div>
 
@@ -273,7 +273,7 @@ const AddFood = () => {
             </div>
 
             <button type="submit" 
-                    className="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-sky-600 hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500 disabled:opacity-50" 
+                    className="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary hover:bg-primary-focus focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-50" 
                     disabled={addFoodMutation.isPending || isLoadingUser}>
               {addFoodMutation.isPending ? (
                 <>
