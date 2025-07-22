@@ -262,13 +262,13 @@ const ManageMyFoods = () => {
 
       
       {isUpdateModalOpen && editingFood && (
-        <dialog id="update_food_modal" className="modal modal-open">
+        <dialog id="update_food_modal" className="modal modal-open bg-black/30">
           <div className="modal-box w-11/12 max-w-2xl">
             <form method="dialog">
               <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2" onClick={closeUpdateModal}>✕</button>
             </form>
-            <h3 className="font-bold text-lg mb-4">Update Food: {editingFood.foodName}</h3>
-            <form onSubmit={handleUpdateSubmit} className="space-y-3">
+            <h3 className="font-bold text-lg mb-4">Update Food: <span className="text-primary">{editingFood.foodName}</span></h3>
+            <form onSubmit={handleUpdateSubmit} className="space-y-4">
               <div>
                 <label className="label"><span className="label-text">Food Name</span></label>
                 <input type="text" name="foodName" value={formData.foodName} onChange={handleInputChange} required className="input input-bordered w-full" />
@@ -313,13 +313,12 @@ const ManageMyFoods = () => {
                   />
                 </label>
               </div>
-              <div className="modal-action mt-4">
-                <button type="button" className="btn" onClick={closeUpdateModal}>Cancel</button>
+              <div className="modal-action mt-6">
+                <button type="button" className="btn btn-ghost" onClick={closeUpdateModal}>Cancel</button>
                 <button type="submit" className="btn btn-primary">Save Changes</button>
               </div>
             </form>
           </div>
-           <form method="dialog" className="modal-backdrop"> <button onClick={closeUpdateModal}>close</button></form>
         </dialog>
       )}
 
