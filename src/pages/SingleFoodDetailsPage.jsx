@@ -213,62 +213,42 @@ const SingleFoodDetailsPage = () => {
           </div>
         </div>
         <div className="p-6 md:p-8">
-          <div className="flex flex-col md:flex-row gap-8">
-            <div className="flex-1">
-              <h2 className="text-xl font-bold mb-2 flex items-center gap-2">
-                <UserCircleIcon className="h-6 w-6 text-sky-600" /> Donor Information
-              </h2>
-              <div className="flex items-center gap-3 mb-2">
-                <img
-                  src={foodDetails.donatorImage || 'https://via.placeholder.com/40'}
-                  alt={foodDetails.donatorName}
-                  className="w-12 h-12 rounded-full border-2 border-sky-400 object-cover"
-                />
-                <div>
-                  <div className="font-semibold text-gray-800">{foodDetails.donatorName}</div>
-                  <div className="flex items-center gap-1 text-gray-600 text-sm">
-                    <EnvelopeIcon className="h-4 w-4" />
-                    <a href={`mailto:${foodDetails.donatorEmail}`} className="hover:underline">{foodDetails.donatorEmail}</a>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div className="lg:col-span-2">
+              <div className="bg-base-100 p-6 rounded-lg shadow-md mb-6">
+                <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
+                  <CubeIcon className="h-6 w-6 text-sky-600" /> Food Details
+                </h2>
+                <p className="text-base-content/80">{foodDetails.additionalNotes || "No additional notes provided by the donor."}</p>
+              </div>
+              <div className="bg-base-100 p-6 rounded-lg shadow-md">
+                <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
+                  <UserCircleIcon className="h-6 w-6 text-sky-600" /> Donor Information
+                </h2>
+                <div className="flex items-center gap-3 mb-2">
+                  <img
+                    src={foodDetails.donatorImage || 'https://via.placeholder.com/40'}
+                    alt={foodDetails.donatorName}
+                    className="w-12 h-12 rounded-full border-2 border-sky-400 object-cover"
+                  />
+                  <div>
+                    <div className="font-semibold text-gray-800">{foodDetails.donatorName}</div>
+                    <div className="flex items-center gap-1 text-gray-600 text-sm">
+                      <EnvelopeIcon className="h-4 w-4" />
+                      <a href={`mailto:${foodDetails.donatorEmail}`} className="hover:underline">{foodDetails.donatorEmail}</a>
+                    </div>
                   </div>
                 </div>
-              </div>
-              <div className="text-gray-500 text-sm mb-2">
-                <span className="font-medium">Food posted:</span>{" "}
-                {foodDetails.createdAt ? new Date(foodDetails.createdAt).toLocaleString() : "Unknown"}
-              </div>
-              {foodDetails.isUrgent && (
-                <div className="text-red-600 font-semibold flex items-center gap-1 mb-2">
-                  <FireIcon className="h-5 w-5" /> Marked as urgent by donor
+                <div className="text-gray-500 text-sm mb-2">
+                  <span className="font-medium">Food posted:</span>{" "}
+                  {foodDetails.createdAt ? new Date(foodDetails.createdAt).toLocaleString() : "Unknown"}
                 </div>
-              )}
-            </div>
-            <div className="flex-1">
-              <h2 className="text-xl font-bold mb-2 flex items-center gap-2">
-                <ChatBubbleLeftEllipsisIcon className="h-6 w-6 text-sky-600" /> Food Details
-              </h2>
-              <div className="mb-2">
-                <span className="font-semibold">Status:</span>{" "}
-                <span className={`badge ${foodDetails.foodStatus === "available" ? "badge-success" : "badge-warning"} text-white`}>
-                  {foodDetails.foodStatus.charAt(0).toUpperCase() + foodDetails.foodStatus.slice(1)}
-                </span>
-              </div>
-              <div className="mb-2">
-                <span className="font-semibold">Quantity:</span> {foodDetails.foodQuantity}
-              </div>
-              <div className="mb-2">
-                <span className="font-semibold">Pickup Location:</span> {foodDetails.pickupLocation}
-              </div>
-              <div className="mb-2">
-                <span className="font-semibold">Expires On:</span> {new Date(foodDetails.expiredDate).toLocaleDateString()}
-              </div>
-              {foodDetails.additionalNotes && (
-                <div className="mb-2">
-                  <span className="font-semibold">Donor's Notes:</span>
-                  <div className="bg-sky-50 border border-sky-100 rounded-md p-3 mt-1 text-gray-700">
-                    {foodDetails.additionalNotes}
+                {foodDetails.isUrgent && (
+                  <div className="text-red-600 font-semibold flex items-center gap-1 mb-2">
+                    <FireIcon className="h-5 w-5" /> Marked as urgent by donor
                   </div>
-                </div>
-              )}
+                )}
+              </div>
             </div>
           </div>
           <div className="mt-8 flex flex-col md:flex-row md:justify-end gap-4">
