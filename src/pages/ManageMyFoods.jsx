@@ -223,10 +223,10 @@ const ManageMyFoods = () => {
       {myFoods.length === 0 ? (
         <p className="text-center text-xl">You haven't added any food items yet.</p>
       ) : (
-        <div className="overflow-x-auto">
+        <div className="overflow-x-auto bg-base-100 rounded-lg shadow">
           <table className="table w-full">
             <thead>
-              <tr>
+              <tr className="text-base">
                 <th>Image</th>
                 <th>Name</th>
                 <th>Quantity</th>
@@ -237,7 +237,7 @@ const ManageMyFoods = () => {
             </thead>
             <tbody>
               {myFoods.map(food => (
-                <tr key={food._id}>
+                <tr key={food._id} className="hover">
                   <td>
                     <div className="avatar">
                       <div className="mask mask-squircle w-12 h-12">
