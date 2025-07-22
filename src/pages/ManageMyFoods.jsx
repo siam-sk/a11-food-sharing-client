@@ -226,7 +226,7 @@ const ManageMyFoods = () => {
         <div className="overflow-x-auto bg-base-100 rounded-lg shadow">
           <table className="table w-full">
             <thead>
-              <tr className="text-base">
+              <tr>
                 <th>Image</th>
                 <th>Name</th>
                 <th>Quantity</th>
