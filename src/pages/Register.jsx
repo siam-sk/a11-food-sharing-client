@@ -15,35 +15,6 @@ const Register = () => {
   const auth = getAuth(app);
   const navigate = useNavigate();
 
-  const getCustomAuthToken = async (firebaseUser) => {
-    try {
-      const idToken = await firebaseUser.getIdToken();
-      const response = await fetch('https://a11-food-sharing-server-three.vercel.app/api/auth/generate-token', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ idToken }),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({ message: 'Failed to parse error from token endpoint' }));
-        throw new Error(errorData.message || 'Failed to get custom auth token');
-      }
-
-      const data = await response.json();
-      if (data.authToken) {
-        localStorage.setItem('authToken', data.authToken);
-        console.log('Custom auth token stored after registration.');
-      } else {
-        throw new Error('Auth token not found in server response');
-      }
-    } catch (error) {
-      console.error("Error getting or storing custom auth token during registration:", error);
-      toast.error(`Token exchange failed: ${error.message}. Please try logging in.`);
-      localStorage.removeItem('authToken');
-    }
-  };
 
   const validatePassword = (passwordToValidate) => {
     if (passwordToValidate.length < 6) {
@@ -84,7 +55,7 @@ const Register = () => {
           // After creating user in Firebase
           await updateProfile(auth.currentUser, {
             displayName: name,
-            photoURL: photo,
+            photoURL: photoURL,
           });
 
           // Now, create user in your backend
@@ -93,7 +64,7 @@ const Register = () => {
             body: {
               email: user.email,
               name: name,
-              photoURL: photo,
+              photoURL: photoURL,
               uid: user.uid,
             },
           });
