@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
-import app from '../../firebase.init';
+import app from "../../firebase.init";
 import { toast } from 'react-toastify';
 import { CalendarDaysIcon, UserCircleIcon, ExclamationTriangleIcon, ClockIcon, MapPinIcon, CubeIcon, ChatBubbleLeftEllipsisIcon, EnvelopeIcon, FireIcon } from '@heroicons/react/24/outline';
+import { apiGet, apiRequest } from '../lib/api';
 
 const SingleFoodDetailsPage = () => {
   const { foodId } = useParams();
@@ -31,14 +32,7 @@ const SingleFoodDetailsPage = () => {
       setIsLoading(true);
       setError(null);
       try {
-        const response = await fetch(`https://a11-food-sharing-server-three.vercel.app/api/foods/${foodId}`);
-        if (!response.ok) {
-          if (response.status === 404) {
-            throw new Error('Food item not found.');
-          }
-          throw new Error('Failed to fetch food details.');
-        }
-        const data = await response.json();
+        const data = await apiGet(`/api/foods/${foodId}`);
         setFoodDetails(data);
       } catch (err) {
         setError(err.message);
@@ -101,33 +95,20 @@ const SingleFoodDetailsPage = () => {
     };
 
     try {
-      const response = await fetch('https://a11-food-sharing-server-three.vercel.app/api/food-requests', {
+      await apiRequest('/api/food-requests', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify(requestData),
+        body: requestData,
       });
-
-      if (response.status === 401 || response.status === 403) {
-        localStorage.removeItem('authToken');
-        const errData = await response.json().catch(() => ({}));
-        toast.error(errData.message || "Authentication failed. Please login again.");
-        navigate('/login');
-        throw new Error(errData.message || 'Authentication failed.');
-      }
-
-      if (!response.ok) {
-        const errData = await response.json().catch(() => ({ message: 'Failed to submit request.' }));
-        throw new Error(errData.message);
-      }
-      toast.success('Food request submitted successfully!');
-      setFoodDetails(prevDetails => ({ ...prevDetails, foodStatus: "requested" }));
-      closeRequestModal();
+      toast.success('Request submitted successfully!');
+      setIsModalOpen(false);
     } catch (err) {
-      toast.error(err.message);
-      console.error("Request submission error:", err);
+      if (err.status === 401 || err.status === 403) {
+        localStorage.removeItem('authToken');
+        toast.error(err.message || 'Authentication failed. Please login again.');
+        navigate('/login');
+        return;
+      }
+      toast.error(err.message || 'Failed to submit request.');
     } finally {
       setIsSubmittingRequest(false);
     }

@@ -1,10 +1,13 @@
-import { useState, useEffect, useMemo } from "react";
-import { useNavigate } from "react-router";
+import { useMemo, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { useNavigate } from 'react-router';
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import app from "../../firebase.init";
 import { motion } from "framer-motion";
-import { useQuery } from '@tanstack/react-query';
 import { MagnifyingGlassIcon, ArrowsUpDownIcon, ViewColumnsIcon, TableCellsIcon, CalendarDaysIcon, ExclamationTriangleIcon, CubeIcon, MapPinIcon, Squares2X2Icon } from '@heroicons/react/24/outline';
+import { apiGet } from '../lib/api';
+import { useDebounce } from '../hooks/useDebounce';
+import FoodCardSkeleton from '../components/FoodCardSkeleton';
 
 const FoodItemCard = ({ food, onNavigateToDetails }) => {
   return (
@@ -76,26 +79,26 @@ const FoodItemCard = ({ food, onNavigateToDetails }) => {
 };
 
 
-const fetchAvailableFoods = async () => {
-  const response = await fetch('https://a11-food-sharing-server-three.vercel.app/api/foods');
-  if (!response.ok) {
-    throw new Error('Network response was not ok while fetching available foods');
-  }
-  return response.json();
-};
+// Replace fetcher
+const fetchAvailableFoods = () => apiGet('/api/foods');
 
 const AvailableFoods = () => {
   const [sortOrder, setSortOrder] = useState("default");
   const [searchTerm, setSearchTerm] = useState("");
+  const debouncedSearch = useDebounce(searchTerm, 300);
   const [columnLayout, setColumnLayout] = useState(3);
 
   const [user, setUser] = useState(null);
   const auth = getAuth(app);
   const navigate = useNavigate();
 
+  // Use unified query key and caching
   const { data: allFoods = [], isLoading, error } = useQuery({
-    queryKey: ['allAvailableFoods'],
+    queryKey: ['foods', 'list'],
     queryFn: fetchAvailableFoods,
+    staleTime: 1000 * 60, 
+    gcTime: 1000 * 60 * 10,
+    refetchOnWindowFocus: false,
   });
 
   useEffect(() => {
@@ -105,12 +108,26 @@ const AvailableFoods = () => {
     return () => unsubscribe();
   }, [auth]);
 
+  // Loading skeletons
+  if (isLoading) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {Array.from({ length: 6 }).map((_, i) => <FoodCardSkeleton key={i} />)}
+        </div>
+      </div>
+    );
+  }
+
+  // When filtering, use debouncedSearch
   const displayedFoods = useMemo(() => {
     let foodsToProcess = [...allFoods];
 
-    if (searchTerm) {
-      foodsToProcess = foodsToProcess.filter(food =>
-        food.foodName.toLowerCase().includes(searchTerm.toLowerCase())
+    if (debouncedSearch) {
+      const q = debouncedSearch.toLowerCase();
+      foodsToProcess = foodsToProcess.filter(f =>
+        f.foodName?.toLowerCase().includes(q) ||
+        f.donorName?.toLowerCase().includes(q)
       );
     }
 
@@ -126,7 +143,7 @@ const AvailableFoods = () => {
       });
     }
     return foodsToProcess;
-  }, [allFoods, sortOrder, searchTerm]);
+  }, [allFoods, debouncedSearch]);
 
   const handleSortChange = (newOrder) => {
     setSortOrder(currentOrder => currentOrder === newOrder ? "default" : newOrder);
@@ -151,15 +168,6 @@ const AvailableFoods = () => {
       navigate(`/food/${foodId}`);
     }
   };
-
-  if (isLoading) {
-    return (
-      <div className="flex flex-col justify-center items-center min-h-[calc(100vh-200px)] py-10 px-4">
-        <span className="loading loading-spinner loading-lg text-sky-600"></span>
-        <p className="mt-4 text-lg text-gray-700">Loading available foods...</p>
-      </div>
-    );
-  }
 
   if (error) {
     return (

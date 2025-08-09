@@ -6,15 +6,9 @@ import { motion } from "framer-motion";
 import { useQuery } from '@tanstack/react-query'; 
 import HeroSlider from "../components/HeroSlider"; 
 import { MapPinIcon, CalendarDaysIcon } from "@heroicons/react/24/outline";
+import { apiGet } from '../lib/api';
 
-const fetchCoreFoodsData = async () => {
-  const response = await fetch('https://a11-food-sharing-server-three.vercel.app/api/foods');
-  if (!response.ok) {
-    const errorData = await response.json().catch(() => ({ message: 'Failed to fetch foods' }));
-    throw new Error(errorData.message || 'Network response was not ok while fetching foods for homepage');
-  }
-  return response.json();
-};
+const fetchCoreFoodsData = () => apiGet('/api/foods');
 
 
 const FoodItemCard = ({ food, onNavigateToDetails }) => {

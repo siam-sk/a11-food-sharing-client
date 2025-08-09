@@ -38,7 +38,7 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: "add-food",
+        path: "/add-food",
         element: (
           <PrivateRoute>
             <TitleRoute title="Add Food">
@@ -48,7 +48,7 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: "manage-my-foods",
+        path: "/manage-my-foods",
         element: (
           <PrivateRoute>
             <TitleRoute title="Manage My Foods">
@@ -58,7 +58,7 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: "my-food-requests",
+        path: "/my-food-requests",
         element: (
           <PrivateRoute>
             <TitleRoute title="My Food Requests">

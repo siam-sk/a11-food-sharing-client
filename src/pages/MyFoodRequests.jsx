@@ -1,8 +1,9 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router';
-import { getAuth, onAuthStateChanged } from 'firebase/auth';
-import app from '../../firebase.init';
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+import app from "../../firebase.init";
 import { toast } from 'react-toastify';
+import { apiGet } from '../lib/api';
 
 const MyFoodRequests = () => {
   const auth = getAuth(app);
@@ -13,45 +14,28 @@ const MyFoodRequests = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const fetchMyRequests = useCallback(async (firebaseUserEmail) => {
-    if (!firebaseUserEmail) {
-        setIsLoading(false);
-        return;
-    }
+  const fetchMyRequests = useCallback(async () => {
     setIsLoading(true);
     setError(null);
-    const token = localStorage.getItem('authToken');
-    const headers = {
-      'Content-Type': 'application/json',
-    };
 
-    if (token) {
-      headers['Authorization'] = `Bearer ${token}`;
-    } else {
-      toast.warn("Authentication token not found. Please log in again.");
-      setIsLoading(false);
+    const token = localStorage.getItem('authToken'); 
+    if (!token) {
+      toast.error("Authentication required. Please log in.");
       navigate('/login');
       return;
     }
 
     try {
-      const response = await fetch(`https://a11-food-sharing-server-three.vercel.app/api/my-food-requests`, { headers });
-
-      if (response.status === 401 || response.status === 403) {
-        localStorage.removeItem('authToken');
-        const errData = await response.json().catch(() => ({}));
-        toast.error(errData.message || "Authentication failed. Please login again.");
-        navigate('/login');
-        throw new Error(errData.message || 'Authentication failed.');
-      }
-      if (!response.ok) {
-        const errData = await response.json().catch(() => ({}));
-        throw new Error(errData.message || 'Failed to fetch your food requests.');
-      }
-      const data = await response.json();
+      const data = await apiGet('/api/my-food-requests');
       setMyRequests(data);
     } catch (err) {
-      setError(err.message);
+      if (err.status === 401 || err.status === 403) {
+        localStorage.removeItem('authToken');
+        toast.error(err.message || "Authentication failed. Please login again.");
+        navigate('/login');
+      } else {
+        setError(err.message || 'Failed to fetch your food requests.');
+      }
       console.error("Error fetching my food requests:", err);
     } finally {
       setIsLoading(false);
@@ -62,7 +46,7 @@ const MyFoodRequests = () => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       if (currentUser) {
         setUser(currentUser);
-        fetchMyRequests(currentUser.email);
+        fetchMyRequests();
       } else {
         setUser(null);
         setMyRequests([]);

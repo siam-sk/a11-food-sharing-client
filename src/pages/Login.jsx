@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router";
 import { getAuth, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import app from "../../firebase.init";
+import { apiRequest } from '../lib/api';
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { LockClosedIcon, EnvelopeIcon, UserCircleIcon } from '@heroicons/react/24/outline';
@@ -20,30 +21,16 @@ const Login = () => {
   const getCustomAuthToken = async (firebaseUser) => {
     try {
       const idToken = await firebaseUser.getIdToken();
-      const response = await fetch('https://a11-food-sharing-server-three.vercel.app/api/auth/generate-token', {
+      const data = await apiRequest('/api/auth/generate-token', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ idToken }),
+        body: { idToken },
       });
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({ message: 'Failed to parse error from token endpoint' }));
-        throw new Error(errorData.message || 'Failed to get custom auth token');
-      }
-
-      const data = await response.json();
-      if (data.authToken) {
-        localStorage.setItem('authToken', data.authToken);
-        console.log('Custom auth token stored.');
-      } else {
-        throw new Error('Auth token not found in server response');
-      }
+      localStorage.setItem('authToken', data.token);
     } catch (error) {
-      console.error("Error getting or storing custom auth token:", error);
-      toast.error(`Token exchange failed: ${error.message}. Please try logging in again.`);
-      localStorage.removeItem('authToken'); 
+      console.error("Token generation error:", error);
+      toast.error(error.message || "Failed to authenticate with server.");
+      localStorage.removeItem('authToken');
+      throw error;
     }
   };
 

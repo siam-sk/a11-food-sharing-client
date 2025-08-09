@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 
 const NotFound = () => (
   <div className="relative isolate flex items-center justify-center min-h-[calc(100vh-200px)] bg-base-200 px-4">
-    {/* Soft floating shapes (primary tint only) */}
+    
     <motion.div
       aria-hidden
       className="pointer-events-none absolute -top-24 -right-24 h-72 w-72 rounded-full bg-primary/15 blur-3xl"

@@ -3,38 +3,9 @@ import { useNavigate, Link } from "react-router";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import app from "../../firebase.init";
 import { toast } from "react-toastify";
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { apiRequest } from "../lib/api";
 import { ClipboardDocumentListIcon, PhotoIcon, CubeIcon, MapPinIcon, CalendarDaysIcon, ChatBubbleLeftEllipsisIcon, ExclamationTriangleIcon, UserCircleIcon } from '@heroicons/react/24/outline';
-
-const addNewFood = async (foodData) => {
-  const token = localStorage.getItem('authToken');
-  const headers = {
-    'Content-Type': 'application/json',
-  };
-  if (token) {
-    headers['Authorization'] = `Bearer ${token}`;
-  } else {
-    console.warn("Auth token not found for adding food. The request will likely fail.");
-  }
-
-  const response = await fetch('https://a11-food-sharing-server-three.vercel.app/api/foods', {
-    method: 'POST',
-    headers: headers,
-    body: JSON.stringify(foodData),
-  });
-
-  if (response.status === 401 || response.status === 403) {
-      localStorage.removeItem('authToken');
-      const errorData = await response.json().catch(() => ({}));
-      toast.error(errorData.message || "Authentication failed. Please login again.");
-      throw new Error(errorData.message || "Authentication failed");
-  }
-  if (!response.ok) {
-    const errorData = await response.json().catch(() => ({ message: "Failed to add food item" }));
-    throw new Error(errorData.message || "Failed to add food item");
-  }
-  return response.json();
-};
 
 const AddFood = () => {
   const auth = getAuth(app);
@@ -66,28 +37,22 @@ const AddFood = () => {
     return () => unsubscribe();
   }, [auth, navigate]);
 
-  const addFoodMutation = useMutation({
-    mutationFn: addNewFood,
+  const { mutateAsync: addFoodMutation, isPending } = useMutation({
+    mutationFn: (newFood) => apiRequest('/api/foods', {
+      method: 'POST',
+      body: newFood,
+    }),
     onSuccess: () => {
       toast.success("Food item added successfully!");
-      queryClient.invalidateQueries({ queryKey: ['availableFoods'] });
-      queryClient.invalidateQueries({ queryKey: ['allAvailableFoods'] });
-      queryClient.invalidateQueries({ queryKey: ['myFoods'] });
-      
-      setFoodName("");
-      setFoodImage("");
-      setFoodQuantity("");
-      setPickupLocation("");
-      setExpiredDate("");
-      setAdditionalNotes("");
-      setIsUrgent(false);
-      navigate("/manage-my-foods");
+      queryClient.invalidateQueries({ queryKey: ['foods'] });
+      navigate('/manage-my-foods');
     },
-    onError: (error) => {
-      console.error("Error adding food: ", error);
-      toast.error(error.message || "Failed to add food item.");
-       if (error.message === "Authentication failed") {
-        navigate("/login", { state: { from: "/add-food" } });
+    onError: (err) => {
+      if (err.status === 401 || err.status === 403) {
+        toast.error("Authentication failed. Please log in again.");
+        navigate('/login');
+      } else {
+        toast.error(err.message || "An unexpected error occurred.");
       }
     },
   });

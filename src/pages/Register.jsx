@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router";
 import { getAuth, createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import app from "../../firebase.init";
+import { apiRequest } from "../lib/api";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { UserIcon, EnvelopeIcon, LockClosedIcon, PhotoIcon, UserPlusIcon } from '@heroicons/react/24/outline';
@@ -61,7 +62,7 @@ const Register = () => {
     return true;
   };
 
-  const handleRegister = (e) => {
+  const handleRegister = async (e) => {
     e.preventDefault();
 
     if (!name.trim()) {
@@ -80,18 +81,28 @@ const Register = () => {
       .then(async (userCredential) => {
         const user = userCredential.user;
         try {
-          await updateProfile(user, {
+          // After creating user in Firebase
+          await updateProfile(auth.currentUser, {
             displayName: name,
-            photoURL: photoURL, 
+            photoURL: photo,
           });
-          toast.success("Registration successful! Profile updated.");
-          await getCustomAuthToken(user);
-          navigate("/"); 
-        } catch (profileError) {
-          toast.error("Failed to update profile: " + profileError.message);
-          
-          await getCustomAuthToken(user);
-          navigate("/");
+
+          // Now, create user in your backend
+          await apiRequest('/api/users', {
+            method: 'POST',
+            body: {
+              email: user.email,
+              name: name,
+              photoURL: photo,
+              uid: user.uid,
+            },
+          });
+
+          toast.success("Registration successful!");
+          navigate('/');
+        } catch (error) {
+          toast.error("Failed to register user: " + error.message);
+          localStorage.removeItem('authToken');
         }
       })
       .catch((error) => {
