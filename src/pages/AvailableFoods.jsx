@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router';
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import app from "../../firebase.init";
 import { motion } from "framer-motion";
-import { MagnifyingGlassIcon, ArrowsUpDownIcon, ViewColumnsIcon, TableCellsIcon, CalendarDaysIcon, ExclamationTriangleIcon, CubeIcon, MapPinIcon, Squares2X2Icon } from '@heroicons/react/24/outline';
+import { MagnifyingGlassIcon, ArrowsUpDownIcon, ViewColumnsIcon, TableCellsIcon, CalendarDaysIcon, ExclamationTriangleIcon, CubeIcon, MapPinIcon, Squares2X2Icon, FunnelIcon, SparklesIcon, FireIcon } from '@heroicons/react/24/outline';
 import { apiGet } from '../lib/api';
 import { useDebounce } from '../hooks/useDebounce';
 import FoodCardSkeleton from '../components/FoodCardSkeleton';
@@ -12,13 +12,14 @@ import FoodCardSkeleton from '../components/FoodCardSkeleton';
 const FoodItemCard = ({ food, onNavigateToDetails }) => {
   return (
     <motion.div
-      className="card bg-base-100 shadow-xl overflow-hidden flex flex-col h-full border border-base-300 hover:border-primary transition-all duration-300 group"
+      className="card bg-base-100 shadow border border-base-300 hover:border-primary transition-all duration-300 group p-0"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
       whileHover={{ scale: 1.02, boxShadow: "0px 10px 20px rgba(0,0,0,0.1)" }}
     >
-      <figure className="relative h-48 flex-shrink-0">
+      {/* Main image */}
+      <figure className="relative h-52 w-full overflow-hidden">
         <img src={food.foodImage} alt={food.foodName} className="w-full h-full object-cover" />
         {food.isUrgent && (
           <div className="badge badge-error gap-1 absolute top-2 right-2 font-semibold text-white p-2 text-xs">
@@ -26,51 +27,41 @@ const FoodItemCard = ({ food, onNavigateToDetails }) => {
           </div>
         )}
       </figure>
-      <div className="card-body p-4 flex flex-col flex-grow">
-        <h2 className="card-title text-lg font-bold mb-2 truncate" title={food.foodName}>
-          {food.foodName}
-        </h2>
-        
-        <div className="flex items-center mb-3">
-          <div className="avatar mr-2">
-            <div className="w-8 h-8 rounded-full ring ring-primary ring-offset-base-100 ring-offset-1">
-              <img src={food.donatorImage || 'https://via.placeholder.com/40'} alt={food.donatorName || 'Donor'} />
+      {/* Bottom row */}
+      <div className="flex flex-row items-stretch justify-between p-3 gap-2">
+        {/* Left: name + donor */}
+        <div className="flex flex-col justify-between flex-1 min-w-0">
+          <div className="flex items-center gap-2 mb-1">
+            <span className="font-bold text-base truncate" title={food.foodName}>{food.foodName}</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="avatar">
+              <div className="w-7 h-7 rounded-full ring ring-primary ring-offset-base-100 ring-offset-1">
+                <img src={food.donatorImage || 'https://via.placeholder.com/40'} alt={food.donatorName || 'Donor'} />
+              </div>
             </div>
-          </div>
-          <span className="text-sm text-base-content/80 truncate" title={food.donatorName || 'Anonymous Donor'}>
-            {food.donatorName || 'Anonymous Donor'}
-          </span>
-        </div>
-
-        
-        <div className="space-y-2 text-sm text-base-content mb-4">
-          <div className="flex items-center" title={`Quantity: ${food.foodQuantity}`}>
-            <CubeIcon className="w-4 h-4 mr-2 flex-shrink-0 text-base-content/60" />
-            <span>Serves: <strong>{food.foodQuantity}</strong></span>
-          </div>
-          <div className="flex items-center" title={`Location: ${food.pickupLocation}`}>
-            <MapPinIcon className="w-4 h-4 mr-2 flex-shrink-0 text-base-content/60" />
-            <span className="truncate">{food.pickupLocation}</span>
-          </div>
-          <div className="flex items-center" title={`Expires: ${new Date(food.expiredDate).toLocaleDateString()}`}>
-            <CalendarDaysIcon className="w-4 h-4 mr-2 flex-shrink-0 text-base-content/60" />
-            <span>Expires: <strong>{food.expiredDate ? new Date(food.expiredDate).toLocaleDateString() : 'N/A'}</strong></span>
+            <span className="text-xs text-base-content/70 truncate" title={food.donatorName || 'Anonymous Donor'}>
+              {food.donatorName || 'Anonymous Donor'}
+            </span>
           </div>
         </div>
-
-        {food.additionalNotes && (
-          <p className="text-sm text-base-content/70 mb-4 flex-grow min-h-[2.5rem]" title={food.additionalNotes}>
-             {food.additionalNotes.length > 60 ? `${food.additionalNotes.substring(0, 60)}...` : food.additionalNotes}
-          </p>
-        )}
-         {!food.additionalNotes && <div className="flex-grow min-h-[2.5rem]"></div>}
-
-        <div className="card-actions justify-end mt-auto">
+        {/* Right: location, expires, button */}
+        <div className="flex flex-col items-end justify-between text-right gap-1">
+          <div className="flex items-center gap-1 text-xs text-base-content/70">
+            <MapPinIcon className="w-4 h-4" />
+            <span className="truncate max-w-[7rem]" title={food.pickupLocation}>{food.pickupLocation}</span>
+          </div>
+          <div className="flex items-center gap-1 text-xs text-base-content/70">
+            <CalendarDaysIcon className="w-4 h-4" />
+            <span>
+              {food.expiredDate ? new Date(food.expiredDate).toLocaleDateString() : 'N/A'}
+            </span>
+          </div>
           <button
             onClick={() => onNavigateToDetails(food._id)}
-            className="btn btn-primary btn-sm"
+            className="btn btn-primary btn-xs mt-1"
           >
-            View Details
+            View
           </button>
         </div>
       </div>
@@ -79,26 +70,26 @@ const FoodItemCard = ({ food, onNavigateToDetails }) => {
 };
 
 
-// Replace fetcher
-const fetchAvailableFoods = () => apiGet('/api/foods');
-
 const AvailableFoods = () => {
-  const [sortOrder, setSortOrder] = useState("default");
-  const [searchTerm, setSearchTerm] = useState("");
-  const debouncedSearch = useDebounce(searchTerm, 300);
+  // Expanded state for new filters and sorting
+  const [filters, setFilters] = useState({
+    searchTerm: "",
+    showUrgentOnly: false,
+    status: 'available', // Default to available
+  });
+  const [sortBy, setSortBy] = useState('newest'); // Default sort
+  const debouncedSearch = useDebounce(filters.searchTerm, 300);
   const [columnLayout, setColumnLayout] = useState(3);
 
   const [user, setUser] = useState(null);
   const auth = getAuth(app);
   const navigate = useNavigate();
 
-  // Use unified query key and caching
   const { data: allFoods = [], isLoading, error } = useQuery({
     queryKey: ['foods', 'list'],
-    queryFn: fetchAvailableFoods,
-    staleTime: 1000 * 60, 
+    queryFn: () => apiGet('/api/foods'), // Fetch all foods
+    staleTime: 1000 * 60,
     gcTime: 1000 * 60 * 10,
-    refetchOnWindowFocus: false,
   });
 
   useEffect(() => {
@@ -107,6 +98,53 @@ const AvailableFoods = () => {
     });
     return () => unsubscribe();
   }, [auth]);
+
+  const handleFilterChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setFilters(prev => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : value,
+    }));
+  };
+
+  const displayedFoods = useMemo(() => {
+    let foodsToProcess = [...allFoods];
+
+    // Apply filters
+    if (debouncedSearch) {
+      const q = debouncedSearch.toLowerCase();
+      foodsToProcess = foodsToProcess.filter(f =>
+        f.foodName?.toLowerCase().includes(q) ||
+        f.donatorName?.toLowerCase().includes(q)
+      );
+    }
+
+    if (filters.showUrgentOnly) {
+      foodsToProcess = foodsToProcess.filter(f => f.isUrgent);
+    }
+    
+    if (filters.status) {
+      foodsToProcess = foodsToProcess.filter(f => f.foodStatus === filters.status);
+    }
+
+    // Apply sorting
+    foodsToProcess.sort((a, b) => {
+      switch (sortBy) {
+        case 'newest':
+          return new Date(b.createdAt) - new Date(a.createdAt);
+        case 'urgent':
+          return (b.isUrgent ? 1 : 0) - (a.isUrgent ? 1 : 0) || new Date(a.expiredDate) - new Date(b.expiredDate);
+        case 'quantity':
+          return b.foodQuantity - a.foodQuantity;
+        case 'expiry_asc':
+          return new Date(a.expiredDate) - new Date(b.expiredDate);
+        default:
+          return 0;
+      }
+    });
+
+    return foodsToProcess;
+  }, [allFoods, debouncedSearch, filters, sortBy]);
 
   // Loading skeletons
   if (isLoading) {
@@ -119,48 +157,6 @@ const AvailableFoods = () => {
     );
   }
 
-  // When filtering, use debouncedSearch
-  const displayedFoods = useMemo(() => {
-    let foodsToProcess = [...allFoods];
-
-    if (debouncedSearch) {
-      const q = debouncedSearch.toLowerCase();
-      foodsToProcess = foodsToProcess.filter(f =>
-        f.foodName?.toLowerCase().includes(q) ||
-        f.donorName?.toLowerCase().includes(q)
-      );
-    }
-
-    if (sortOrder !== "default") {
-      foodsToProcess.sort((a, b) => {
-        const dateA = new Date(a.expiredDate);
-        const dateB = new Date(b.expiredDate);
-        if (sortOrder === 'asc') {
-          return dateA - dateB;
-        } else {
-          return dateB - dateA;
-        }
-      });
-    }
-    return foodsToProcess;
-  }, [allFoods, debouncedSearch]);
-
-  const handleSortChange = (newOrder) => {
-    setSortOrder(currentOrder => currentOrder === newOrder ? "default" : newOrder);
-  };
-
-  const handleSearchChange = (event) => {
-    setSearchTerm(event.target.value);
-  };
-
-  const toggleLayout = () => {
-    setColumnLayout(prev => {
-      if (prev === 2) return 3;
-      if (prev === 3) return 4;
-      return 2; 
-    });
-  };
-
   const handleViewDetails = (foodId) => {
     if (!user) {
       navigate("/login", { state: { from: `/food/${foodId}` } });
@@ -168,7 +164,7 @@ const AvailableFoods = () => {
       navigate(`/food/${foodId}`);
     }
   };
-
+  
   if (error) {
     return (
       <div className="flex flex-col justify-center items-center min-h-[calc(100vh-200px)] py-10 px-4 text-center">
@@ -182,70 +178,62 @@ const AvailableFoods = () => {
   return (
     <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="text-center mb-10">
-        <CalendarDaysIcon className="mx-auto h-16 w-auto text-primary" />
-        <h1 className="mt-4 text-4xl font-extrabold text-base-content sm:text-5xl">
-          Available Foods
-        </h1>
-        <p className="mt-3 text-lg text-base-content/80">
-          Browse food items shared by our community.
-        </p>
+        <h1 className="text-4xl font-extrabold text-base-content sm:text-5xl">Available Foods</h1>
+        <p className="mt-3 text-lg text-base-content/80">Browse food items shared by our community.</p>
       </div>
 
       <div className="mb-8 p-4 sm:p-6 bg-base-100 shadow-xl rounded-lg">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
-          <div className="md:col-span-1">
-            <label htmlFor="searchFood" className="block text-sm font-medium text-base-content mb-1">
-              Search by Food Name
-            </label>
-            <div className="relative rounded-md shadow-sm">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 items-start">
+          {/* Search Input */}
+          <div className="lg:col-span-2">
+            <label htmlFor="searchTerm" className="block text-sm font-medium text-base-content mb-1">Search by Food or Donor</label>
+            <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <MagnifyingGlassIcon className="h-5 w-5 text-base-content/40" aria-hidden="true" />
+                <MagnifyingGlassIcon className="h-5 w-5 text-base-content/40" />
               </div>
               <input
                 type="text"
-                id="searchFood"
-                placeholder="E.g., Apples, Bread"
-                className="input input-bordered w-full pl-10 py-2"
-                value={searchTerm}
-                onChange={handleSearchChange}
+                name="searchTerm"
+                id="searchTerm"
+                placeholder="E.g., Apples, Bread, John Doe"
+                className="input input-bordered w-full pl-10"
+                value={filters.searchTerm}
+                onChange={handleFilterChange}
               />
             </div>
           </div>
 
-          <div className="md:col-span-2 flex flex-col sm:flex-row sm:items-end sm:justify-end gap-2">
-            <div className="flex items-center gap-2 flex-wrap">
-              <span className="text-sm font-medium text-base-content self-center">Sort by Expire Date:</span>
-              <button
-                onClick={() => handleSortChange('asc')}
-                className={`btn btn-sm ${sortOrder === 'asc' ? 'btn-primary' : 'btn-outline'}`}
-                title="Sort by nearest expiry date"
-              >
-                <ArrowsUpDownIcon className="h-4 w-4 mr-1 inline-block transform rotate-180" /> Nearest
-              </button>
-              <button
-                onClick={() => handleSortChange('desc')}
-                className={`btn btn-sm ${sortOrder === 'desc' ? 'btn-primary' : 'btn-outline'}`}
-                title="Sort by furthest expiry date"
-              >
-                <ArrowsUpDownIcon className="h-4 w-4 mr-1 inline-block" /> Furthest
-              </button>
-            </div>
-            <button
-                onClick={toggleLayout}
-                className="btn btn-sm btn-outline"
-                title={`Switch to ${columnLayout === 2 ? 3 : columnLayout === 3 ? 4 : 2} Columns`}
-            >
-                {columnLayout === 2 && <ViewColumnsIcon className="h-5 w-5" />}
-                {columnLayout === 3 && <TableCellsIcon className="h-5 w-5" />}
-                {columnLayout === 4 && <Squares2X2Icon className="h-5 w-5" />}
-                <span className="ml-2 hidden sm:inline">{columnLayout} Cols</span>
-            </button>
+          {/* Sort Select */}
+          <div>
+            <label htmlFor="sortBy" className="block text-sm font-medium text-base-content mb-1">Sort By</label>
+            <select name="sortBy" id="sortBy" value={sortBy} onChange={(e) => setSortBy(e.target.value)} className="select select-bordered w-full">
+              <option value="newest">Newest First</option>
+              <option value="urgent">Most Urgent</option>
+              <option value="quantity">Highest Quantity</option>
+              <option value="expiry_asc">Expiring Soonest</option>
+            </select>
+          </div>
+
+          {/* Quick Filters */}
+          <div className="flex flex-col gap-2">
+             <label className="block text-sm font-medium text-base-content mb-1">Filters</label>
+             <div className="form-control">
+                <label className="cursor-pointer label justify-start gap-2 p-0">
+                  <input type="checkbox" name="showUrgentOnly" checked={filters.showUrgentOnly} onChange={handleFilterChange} className="checkbox checkbox-warning" />
+                  <span className="label-text flex items-center gap-1"><FireIcon className="h-4 w-4"/> Urgent Only</span>
+                </label>
+              </div>
           </div>
         </div>
       </div>
 
-      {displayedFoods.length > 0 ? (
-        <div className={`grid gap-6 grid-cols-1 md:grid-cols-2 ${columnLayout === 3 ? 'lg:grid-cols-3' : ''} ${columnLayout === 4 ? 'lg:grid-cols-4' : ''}`}>
+      {/* Results */}
+      {isLoading ? (
+         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          {Array.from({ length: 8 }).map((_, i) => <FoodCardSkeleton key={i} />)}
+        </div>
+      ) : displayedFoods.length > 0 ? (
+        <div className={`grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-4`}>
           {displayedFoods.map(food => (
             <FoodItemCard key={food._id} food={food} onNavigateToDetails={handleViewDetails} />
           ))}
@@ -253,14 +241,10 @@ const AvailableFoods = () => {
       ) : (
         <div className="text-center py-10">
           <MagnifyingGlassIcon className="mx-auto h-12 w-12 text-base-content/40 mb-4" />
-          <p className="text-xl text-base-content/80">
-            {searchTerm ? "No food items match your search." : "No food items currently available."}
-          </p>
-          {searchTerm && (
-            <button onClick={() => setSearchTerm("")} className="mt-4 btn btn-sm btn-link">
-              Clear Search
-            </button>
-          )}
+          <p className="text-xl text-base-content/80">No food items match your current filters.</p>
+          <button onClick={() => setFilters({ searchTerm: "", showUrgentOnly: false, status: 'available' })} className="mt-4 btn btn-sm btn-link">
+            Clear Filters
+          </button>
         </div>
       )}
     </div>
