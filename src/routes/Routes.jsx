@@ -84,7 +84,7 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: "food/:foodId",
+        path: "/food/:foodId",
         element: (
           <TitleRoute title="Food Details">
             <SingleFoodDetailsPage />

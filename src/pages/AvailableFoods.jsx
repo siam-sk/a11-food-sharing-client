@@ -158,11 +158,7 @@ const AvailableFoods = () => {
   }
 
   const handleViewDetails = (foodId) => {
-    if (!user) {
-      navigate("/login", { state: { from: `/food/${foodId}` } });
-    } else {
-      navigate(`/food/${foodId}`);
-    }
+    navigate(`/food/${foodId}`);
   };
   
   if (error) {
