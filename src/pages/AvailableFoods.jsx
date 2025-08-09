@@ -28,40 +28,40 @@ const FoodItemCard = ({ food, onNavigateToDetails }) => {
         )}
       </figure>
       {/* Bottom row */}
-      <div className="flex flex-row items-stretch justify-between p-3 gap-2">
+      <div className="flex flex-row items-stretch justify-between p-4 gap-3">
         {/* Left: name + donor */}
         <div className="flex flex-col justify-between flex-1 min-w-0">
-          <div className="flex items-center gap-2 mb-1">
-            <span className="font-bold text-base truncate" title={food.foodName}>{food.foodName}</span>
+          <div className="flex items-center gap-2 mb-2">
+            <span className="font-bold text-lg truncate" title={food.foodName}>{food.foodName}</span>
           </div>
           <div className="flex items-center gap-2">
             <div className="avatar">
-              <div className="w-7 h-7 rounded-full ring ring-primary ring-offset-base-100 ring-offset-1">
+              <div className="w-8 h-8 rounded-full ring ring-primary ring-offset-base-100 ring-offset-1">
                 <img src={food.donatorImage || 'https://via.placeholder.com/40'} alt={food.donatorName || 'Donor'} />
               </div>
             </div>
-            <span className="text-xs text-base-content/70 truncate" title={food.donatorName || 'Anonymous Donor'}>
+            <span className="text-sm text-base-content/70 truncate" title={food.donatorName || 'Anonymous Donor'}>
               {food.donatorName || 'Anonymous Donor'}
             </span>
           </div>
         </div>
         {/* Right: location, expires, button */}
-        <div className="flex flex-col items-end justify-between text-right gap-1">
-          <div className="flex items-center gap-1 text-xs text-base-content/70">
-            <MapPinIcon className="w-4 h-4" />
+        <div className="flex flex-col items-end justify-between text-right gap-2">
+          <div className="flex items-center gap-1 text-sm text-base-content/70">
+            <MapPinIcon className="w-5 h-5" />
             <span className="truncate max-w-[7rem]" title={food.pickupLocation}>{food.pickupLocation}</span>
           </div>
-          <div className="flex items-center gap-1 text-xs text-base-content/70">
-            <CalendarDaysIcon className="w-4 h-4" />
+          {/* <div className="flex items-center gap-1 text-sm text-base-content/70">
+            <CalendarDaysIcon className="w-5 h-5" />
             <span>
               {food.expiredDate ? new Date(food.expiredDate).toLocaleDateString() : 'N/A'}
             </span>
-          </div>
+          </div> */}
           <button
             onClick={() => onNavigateToDetails(food._id)}
-            className="btn btn-primary btn-xs mt-1"
+            className="btn btn-primary btn-sm mt-2"
           >
-            View
+            View Details
           </button>
         </div>
       </div>

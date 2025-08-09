@@ -14,13 +14,14 @@ const fetchCoreFoodsData = () => apiGet('/api/foods');
 const FoodItemCard = ({ food, onNavigateToDetails }) => {
   return (
     <motion.div
-      className="card bg-base-100 shadow-xl overflow-hidden flex flex-col h-full border border-transparent hover:border-primary transition-all duration-300"
+      className="card bg-base-100 shadow border border-base-300 hover:border-primary transition-all duration-300 group p-0"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      whileHover={{ scale: 1.03, boxShadow: "0px 10px 20px rgba(0,0,0,0.1)" }}
+      whileHover={{ scale: 1.02, boxShadow: "0px 10px 20px rgba(0,0,0,0.1)" }}
     >
-      <figure className="relative h-48 flex-shrink-0">
+      {/* Main image */}
+      <figure className="relative h-52 w-full overflow-hidden">
         <img src={food.foodImage} alt={food.foodName} className="w-full h-full object-cover" />
         {food.isUrgent && (
           <div className="badge badge-error gap-1 absolute top-2 right-2 font-semibold text-white p-2 text-xs">
@@ -28,43 +29,39 @@ const FoodItemCard = ({ food, onNavigateToDetails }) => {
           </div>
         )}
       </figure>
-      <div className="card-body p-4 flex flex-col flex-grow"> 
-        <h2 className="card-title text-lg font-bold mb-2 truncate" title={food.foodName}> 
-          {food.foodName}
-        </h2>
-        
-        <div className="flex items-center mb-3"> 
-          <div className="avatar mr-2">
-            <div className="w-8 h-8 rounded-full ring ring-primary ring-offset-base-100 ring-offset-1">
-              <img src={food.donatorImage || 'https://via.placeholder.com/40'} alt={food.donatorName || 'Donor'} />
+      {/* Bottom row */}
+      <div className="flex flex-row items-stretch justify-between p-4 gap-3">
+        {/* Left: name + donor */}
+        <div className="flex flex-col justify-between flex-1 min-w-0">
+          <div className="flex items-center gap-2 mb-2">
+            <span className="font-bold text-lg truncate" title={food.foodName}>{food.foodName}</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="avatar">
+              <div className="w-8 h-8 rounded-full ring ring-primary ring-offset-base-100 ring-offset-1">
+                <img src={food.donatorImage || 'https://via.placeholder.com/40'} alt={food.donatorName || 'Donor'} />
+              </div>
             </div>
-          </div>
-          <span className="text-sm text-base-content/80 truncate" title={food.donatorName || 'Anonymous Donor'}>
-            {food.donatorName || 'Anonymous Donor'}
-          </span>
-        </div>
-
-        <div className="space-y-1 text-xs text-base-content/70 mb-3">
-          <div className="flex items-center" title={`Location: ${food.pickupLocation}`}>
-            <MapPinIcon className="w-4 h-4 mr-1.5 flex-shrink-0" />
-            <span className="truncate">{food.pickupLocation}</span>
-          </div>
-          <div className="flex items-center" title={`Expires: ${new Date(food.expiredDateTime).toLocaleDateString()}`}>
-            <CalendarDaysIcon className="w-4 h-4 mr-1.5 flex-shrink-0" />
-            <span>Expires: {new Date(food.expiredDateTime).toLocaleDateString()}</span>
+            <span className="text-sm text-base-content/70 truncate" title={food.donatorName || 'Anonymous Donor'}>
+              {food.donatorName || 'Anonymous Donor'}
+            </span>
           </div>
         </div>
-
-        {food.additionalNotes && (
-          <p className="text-sm text-base-content/70 mb-3 flex-grow" title={food.additionalNotes}> 
-            {food.additionalNotes.length > 60 ? `${food.additionalNotes.substring(0, 60)}...` : food.additionalNotes}
-          </p>
-        )}
-
-        <div className="card-actions justify-end mt-auto">
+        {/* Right: location, expires, button */}
+        <div className="flex flex-col items-end justify-between text-right gap-2">
+          <div className="flex items-center gap-1 text-sm text-base-content/70">
+            <MapPinIcon className="w-5 h-5" />
+            <span className="truncate max-w-[7rem]" title={food.pickupLocation}>{food.pickupLocation}</span>
+          </div>
+          {/* <div className="flex items-center gap-1 text-sm text-base-content/70">
+            <CalendarDaysIcon className="w-5 h-5" />
+            <span>
+              {food.expiredDateTime ? new Date(food.expiredDateTime).toLocaleDateString() : 'N/A'}
+            </span>
+          </div> */}
           <button
             onClick={() => onNavigateToDetails(food._id)}
-            className="btn btn-primary btn-sm" 
+            className="btn btn-primary btn-sm mt-2"
           >
             View Details
           </button>
@@ -150,7 +147,7 @@ const HomePage = () => {
           </div>
         )}
         {!isLoadingFoods && !foodsError && featuredFoods.length > 0 && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {featuredFoods.map(food => (
               <FoodItemCard key={food._id} food={food} onNavigateToDetails={handleViewDetails} />
             ))}
